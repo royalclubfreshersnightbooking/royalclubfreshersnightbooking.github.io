@@ -1267,6 +1267,70 @@ let mpesaWaitingForPayment = false;
 
 const MAX_PAYMENT_CHECK_ATTEMPTS = 60;
 
+
+/* =========================================================
+   DOWNLOAD STATE
+   ========================================================= */
+
+function getTicketDownloadKey(order){
+
+  const reference =
+    order?.reference ||
+    order?.orderId ||
+    "";
+
+  return reference
+    ? "uok_ticket_downloaded_" + reference
+    : "";
+
+}
+
+function isTicketAlreadyDownloaded(order){
+
+  const key =
+    getTicketDownloadKey(order);
+
+  return key
+    ? localStorage.getItem(key) === "true"
+    : false;
+
+}
+
+function markTicketAsDownloaded(order){
+
+  const key =
+    getTicketDownloadKey(order);
+
+  if(key){
+
+    localStorage.setItem(
+      key,
+      "true"
+    );
+
+  }
+
+}
+
+function hideDownloadButton(){
+
+  downloadBtn.disabled = true;
+
+  downloadBtn.classList.remove("ready");
+
+  downloadBtn.textContent =
+    "✓ TICKET ALREADY DOWNLOADED";
+
+  downloadBtn.style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   DOWNLOAD BUTTON
+   ========================================================= */
+
 function lockDownloadButton(){
 
   downloadBtn.disabled = true;
@@ -1275,6 +1339,9 @@ function lockDownloadButton(){
 
   downloadBtn.textContent =
     "🎟️ PAYMENT NOT APPROVED — TICKET LOCKED";
+
+  downloadBtn.style.display =
+    "block";
 
 }
 
@@ -1287,9 +1354,13 @@ function unlockDownloadButton(){
   downloadBtn.textContent =
     "🎟️ DOWNLOAD SECURE TICKET";
 
+  downloadBtn.style.display =
+    "block";
+
 }
 
 lockDownloadButton();
+
 
 function updateTotal(){
 
@@ -1578,12 +1649,31 @@ async function verifyMpesaPayment(
         "uok_pending_ticket"
       );
 
-      showStatus(
-        "✓ PAYMENT CONFIRMED! Your ticket is ready for download.",
-        "success"
-      );
+      if(
+        isTicketAlreadyDownloaded(
+          paidOrder
+        )
+      ){
 
-      unlockDownloadButton();
+        hideDownloadButton();
+
+        showStatus(
+          "Your ticket has already been downloaded.",
+          "info"
+        );
+
+      }
+
+      else{
+
+        showStatus(
+          "✓ PAYMENT CONFIRMED! Your ticket is ready for download.",
+          "success"
+        );
+
+        unlockDownloadButton();
+
+      }
 
       payBtn.disabled = false;
 
@@ -1593,17 +1683,25 @@ async function verifyMpesaPayment(
         '<span class="mpesa-icon">M</span>' +
         '<span class="mpesa-word">M-PESA</span>';
 
-      setTimeout(
-        function(){
+      if(
+        !isTicketAlreadyDownloaded(
+          paidOrder
+        )
+      ){
 
-          downloadBtn.scrollIntoView({
-            behavior:"smooth",
-            block:"center"
-          });
+        setTimeout(
+          function(){
 
-        },
-        300
-      );
+            downloadBtn.scrollIntoView({
+              behavior:"smooth",
+              block:"center"
+            });
+
+          },
+          300
+        );
+
+      }
 
       return;
 
@@ -2371,24 +2469,43 @@ async function verifyReturnedCardPayment(){
         window.location.pathname
       );
 
-      showStatus(
-        "Card payment confirmed successfully! Your ticket is ready.",
-        "success"
-      );
+      if(
+        isTicketAlreadyDownloaded(
+          paidOrder
+        )
+      ){
 
-      unlockDownloadButton();
+        hideDownloadButton();
 
-      setTimeout(
-        function(){
+        showStatus(
+          "Your ticket has already been downloaded.",
+          "info"
+        );
 
-          downloadBtn.scrollIntoView({
-            behavior:"smooth",
-            block:"center"
-          });
+      }
 
-        },
-        300
-      );
+      else{
+
+        showStatus(
+          "Card payment confirmed successfully! Your ticket is ready.",
+          "success"
+        );
+
+        unlockDownloadButton();
+
+        setTimeout(
+          function(){
+
+            downloadBtn.scrollIntoView({
+              behavior:"smooth",
+              block:"center"
+            });
+
+          },
+          300
+        );
+
+      }
 
       return;
 
@@ -2432,6 +2549,11 @@ async function verifyReturnedCardPayment(){
   }
 
 }
+
+
+/* =========================================================
+   DOWNLOAD TICKET
+   ========================================================= */
 
 downloadBtn.addEventListener(
   "click",
@@ -2488,12 +2610,51 @@ downloadBtn.addEventListener(
 
     }
 
-    generateTicket(
-      paidOrder
-    );
+    if(
+      isTicketAlreadyDownloaded(
+        paidOrder
+      )
+    ){
+
+      hideDownloadButton();
+
+      showStatus(
+        "This ticket has already been downloaded.",
+        "info"
+      );
+
+      return;
+
+    }
+
+    /*
+      generateTicket() returns true once the browser
+      download has actually been initiated.
+    */
+
+    const downloadStarted =
+      generateTicket(
+        paidOrder
+      );
+
+    if(downloadStarted){
+
+      markTicketAsDownloaded(
+        paidOrder
+      );
+
+      hideDownloadButton();
+
+      showStatus(
+        "✓ Ticket downloaded successfully.",
+        "success"
+      );
+
+    }
 
   }
 );
+
 
 function generateTicket(order){
 
@@ -2614,8 +2775,6 @@ function generateTicket(order){
 'transform-origin:center center;' +
 '}' +
 
-/* WATERMARK */
-
 '.ticket:before{' +
 'content:"UOK FRESHERS NIGHT 2026 • ROYAL LOUNGE • JOSKEV DEVELOPERS";' +
 'position:absolute;' +
@@ -2655,8 +2814,6 @@ function generateTicket(order){
 'position:relative;' +
 'z-index:5;' +
 '}' +
-
-/* QR CODE REPLACES ROYAL LOUNGE IMAGE */
 
 '.qr-wrap{' +
 'width:44px;' +
@@ -3023,7 +3180,16 @@ function generateTicket(order){
     1000
   );
 
+  /*
+    The browser download has now been initiated.
+    Return true so the caller can record this ticket
+    as downloaded.
+  */
+
+  return true;
+
 }
+
 
 function restorePaidTicket(){
 
@@ -3069,12 +3235,31 @@ function restorePaidTicket(){
       paidOrder =
         savedOrder;
 
-      showStatus(
-        "Your confirmed ticket is available for download.",
-        "success"
-      );
+      if(
+        isTicketAlreadyDownloaded(
+          savedOrder
+        )
+      ){
 
-      unlockDownloadButton();
+        hideDownloadButton();
+
+        showStatus(
+          "Your ticket has already been downloaded.",
+          "info"
+        );
+
+      }
+
+      else{
+
+        showStatus(
+          "Your confirmed ticket is available for download.",
+          "success"
+        );
+
+        unlockDownloadButton();
+
+      }
 
     }
 
@@ -3096,6 +3281,7 @@ function restorePaidTicket(){
   }
 
 }
+
 
 document.addEventListener(
   "DOMContentLoaded",
