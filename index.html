@@ -677,7 +677,7 @@ body:after{
 
 
 /* =========================================================
-   MOBILE — FULL PAGE / NO SCROLL
+   MOBILE — FILL PHONE SCREEN
    ========================================================= */
 
 @media(max-width:600px){
@@ -724,22 +724,22 @@ body:after{
 
   .container{
     position:fixed;
-
     inset:0;
 
     z-index:1;
 
     width:100%;
-    max-width:430px;
+    max-width:none;
+
     height:100dvh;
-    min-height:0;
+    min-height:100dvh;
 
-    margin:0 auto;
-
-    padding:6px 10px;
+    margin:0;
+    padding:10px;
 
     display:flex;
     flex-direction:column;
+
     justify-content:center;
     align-items:center;
 
@@ -747,142 +747,120 @@ body:after{
   }
 
   .spacer{
-    display:none;
+    display:none !important;
   }
 
   .form-card{
     width:100%;
     max-width:430px;
 
-    padding:9px 11px 8px;
+    padding:18px 16px 16px;
 
     border:1px solid rgba(255,184,0,.95);
-    border-radius:18px;
+    border-radius:20px;
 
     background:
-      rgba(18,10,2,.38) !important;
+      rgba(18,10,2,.48) !important;
 
     box-shadow:
-      0 5px 20px rgba(0,0,0,.35);
+      0 8px 30px rgba(0,0,0,.45);
 
     overflow:hidden !important;
 
-    flex:0 1 auto;
+    flex:0 0 auto;
   }
 
   .offer{
-    font-size:11px;
-    margin-bottom:7px;
-
-    color:#fff;
+    font-size:14px;
+    margin-bottom:11px;
 
     text-shadow:
-      0 2px 5px #000;
-  }
-
-  .offer strong{
-    color:#ffd21a;
-
-    text-shadow:
-      0 1px 4px #000;
+      0 2px 6px #000;
   }
 
   .note{
-    margin:0 0 7px;
-    padding:6px 7px;
+    margin:0 0 11px;
+    padding:9px 9px;
 
-    font-size:9px;
+    font-size:11px;
+    line-height:1.25;
 
-    border-radius:9px;
-
-    line-height:1.15;
+    border-radius:10px;
   }
 
   .field{
-    margin-bottom:6px;
+    margin-bottom:9px;
   }
 
   .field label{
-    margin-bottom:3px;
+    margin-bottom:5px;
 
-    font-size:9px;
-    letter-spacing:.3px;
+    font-size:11px;
+    letter-spacing:.4px;
   }
 
   .field input{
     width:100%;
-    height:37px;
+    height:44px;
 
-    padding:0 9px;
+    padding:0 11px;
 
-    border-radius:9px;
+    border-radius:10px;
 
-    font-size:12px;
+    font-size:14px;
 
     background:
       rgba(0,0,0,.48) !important;
 
     border:
-      1px solid rgba(255,255,255,.65);
+      1px solid rgba(255,255,255,.55);
 
     color:#fff;
-  }
-
-  .field input::placeholder{
-    color:#e8e8e8;
   }
 
   .ticket-row{
     width:100%;
 
-    margin:7px 0;
-    padding:7px 8px;
+    margin:10px 0;
+    padding:10px 10px;
 
-    gap:4px;
+    gap:7px;
 
-    border-radius:10px;
+    border-radius:12px;
 
     background:
-      rgba(0,0,0,.36) !important;
+      rgba(0,0,0,.38) !important;
 
     border:
-      1px solid rgba(255,190,0,.70);
+      1px solid rgba(255,190,0,.65);
   }
 
   .ticket-info{
-    font-size:11px;
-
-    color:#fff;
+    font-size:13px;
 
     text-shadow:
       0 2px 5px #000;
   }
 
   .ticket-info small{
-    font-size:8px;
-    margin-top:1px;
-
-    color:#f1f1f1;
+    font-size:9px;
+    margin-top:2px;
   }
 
   .ticket-price{
-    font-size:13px;
-
+    font-size:15px;
     color:#20e65a;
-
-    text-shadow:
-      0 1px 5px rgba(0,0,0,.9);
   }
 
   .stepper{
-    gap:4px;
+    gap:6px;
   }
 
   .step-btn{
-    width:31px;
-    height:31px;
+    width:36px;
+    height:36px;
 
-    font-size:18px;
+    font-size:21px;
 
     border:
       1px solid #ffd21a;
@@ -892,132 +870,107 @@ body:after{
   }
 
   .qty{
-    min-width:17px;
+    min-width:20px;
 
-    font-size:17px;
-
-    color:#fff;
-
-    text-shadow:
-      0 2px 4px #000;
+    font-size:19px;
   }
 
   .total{
     width:100%;
 
-    padding:8px 10px;
-    margin-bottom:7px;
+    padding:10px 11px;
+    margin-bottom:10px;
 
-    border-radius:10px;
+    border-radius:11px;
 
     background:
-      rgba(0,0,0,.36) !important;
+      rgba(0,0,0,.38) !important;
 
     border:
-      1px solid rgba(255,190,0,.70);
+      1px solid rgba(255,190,0,.65);
   }
 
   .total span{
-    font-size:10px;
+    font-size:12px;
   }
 
   .total strong{
-    font-size:18px;
-
+    font-size:21px;
     color:#20e65a;
-
-    text-shadow:
-      0 1px 5px rgba(0,0,0,.9);
   }
 
   .payment-title{
-    gap:6px;
+    gap:7px;
 
-    margin:3px 0 6px;
+    margin:4px 0 8px;
 
-    font-size:9px;
-    letter-spacing:.5px;
+    font-size:10px;
+    letter-spacing:.6px;
   }
 
   .payment-title:before,
   .payment-title:after{
     height:1px;
-
-    background:
-      linear-gradient(
-        90deg,
-        transparent,
-        #ffd21a
-      );
-  }
-
-  .payment-title:after{
-    background:
-      linear-gradient(
-        90deg,
-        #ffd21a,
-        transparent
-      );
   }
 
   .pay-btn{
     width:100%;
 
-    height:46px;
+    height:52px;
 
-    border-radius:10px;
+    border-radius:11px;
 
-    gap:7px;
+    gap:9px;
 
-    font-size:13px;
+    font-size:15px;
 
     box-shadow:
-      0 5px 14px rgba(0,0,0,.28);
+      0 6px 17px rgba(0,0,0,.30);
   }
 
   .mpesa-icon{
-    width:29px;
-    height:34px;
+    width:32px;
+    height:38px;
 
     border-width:2px;
-    border-radius:7px;
+    border-radius:8px;
 
-    font-size:9px;
+    font-size:10px;
   }
 
   .mpesa-icon:before{
-    top:3px;
+    top:4px;
 
-    width:9px;
+    width:10px;
     height:2px;
   }
 
   .mpesa-icon:after{
-    right:-10px;
-    top:11px;
+    right:-11px;
+    top:13px;
 
-    width:12px;
-    height:7px;
+    width:13px;
+    height:8px;
 
     border-top-width:3px;
     border-right-width:3px;
   }
 
   .mpesa-word{
-    font-size:15px;
+    font-size:17px;
   }
 
   .card-pay-btn{
-    margin-top:6px;
+    margin-top:8px;
 
-    gap:5px;
+    gap:6px;
 
     font-size:10px;
   }
 
   .card-icon{
-    width:30px;
-    height:22px;
+    width:32px;
+    height:23px;
 
     border-width:2px;
     border-radius:4px;
@@ -1029,68 +982,64 @@ body:after{
   }
 
   .brands{
-    gap:4px;
+    gap:5px;
   }
 
   .visa{
-    font-size:11px;
+    font-size:12px;
   }
 
   .mc{
-    width:22px;
-    height:13px;
+    width:23px;
+    height:14px;
   }
 
   .mc:before,
   .mc:after{
-    width:13px;
-    height:13px;
+    width:14px;
+    height:14px;
   }
 
   .amex{
-    font-size:5px;
+    font-size:6px;
 
-    padding:2px 3px;
+    padding:2px 4px;
 
     border-radius:2px;
   }
 
   .status{
-    margin-top:6px;
+    margin-top:8px;
 
-    padding:6px 7px;
-
-    border-radius:8px;
-
-    font-size:9px;
-    line-height:1.2;
-  }
-
-  .download-btn{
-    height:39px;
-
-    margin-top:6px;
+    padding:8px 9px;
 
     border-radius:9px;
 
-    font-size:11px;
+    font-size:10px;
+    line-height:1.25;
+  }
+
+  .download-btn{
+    height:43px;
+
+    margin-top:8px;
+
+    border-radius:10px;
+
+    font-size:12px;
   }
 
   .footer{
     flex:0 0 auto;
 
-    padding:5px 0 0;
+    padding:7px 0 0;
 
-    font-size:7px;
+    font-size:8px;
 
     color:#fff;
 
     text-shadow:
-      0 2px 7px #000;
-  }
-
-  .footer strong{
-    color:#ffb000;
+      0 2px 8px #000;
   }
 
 }
@@ -1100,121 +1049,112 @@ body:after{
    SMALL PHONES
    ========================================================= */
 
-@media(max-width:390px){
+@media(max-width:380px){
 
   .container{
-    padding-left:7px;
-    padding-right:7px;
+    padding:7px;
   }
 
   .form-card{
-    padding:8px 9px 7px;
-    border-radius:16px;
-  }
-
-  .note{
-    font-size:8px;
-    padding:5px 6px;
-    margin-bottom:6px;
+    padding:15px 13px 14px;
+    border-radius:18px;
   }
 
   .offer{
+    font-size:13px;
+    margin-bottom:9px;
+  }
+
+  .note{
     font-size:10px;
-    margin-bottom:6px;
+    padding:8px;
+    margin-bottom:9px;
   }
 
   .field{
-    margin-bottom:5px;
+    margin-bottom:8px;
   }
 
   .field label{
-    font-size:8px;
-  }
-
-  .field input{
-    height:34px;
-    font-size:11px;
-  }
-
-  .ticket-row{
-    margin:6px 0;
-    padding:6px 7px;
-  }
-
-  .ticket-info{
     font-size:10px;
   }
 
+  .field input{
+    height:42px;
+    font-size:13px;
+  }
+
+  .ticket-row{
+    margin:9px 0;
+    padding:9px;
+  }
+
+  .ticket-info{
+    font-size:12px;
+  }
+
   .ticket-info small{
-    font-size:7px;
+    font-size:8px;
   }
 
   .ticket-price{
-    font-size:12px;
-  }
-
-  .step-btn{
-    width:29px;
-    height:29px;
-    font-size:17px;
-  }
-
-  .qty{
-    font-size:16px;
-  }
-
-  .total{
-    padding:7px 9px;
-    margin-bottom:6px;
-  }
-
-  .total span{
-    font-size:9px;
-  }
-
-  .total strong{
-    font-size:17px;
-  }
-
-  .payment-title{
-    font-size:8px;
-    margin:2px 0 5px;
-  }
-
-  .pay-btn{
-    height:43px;
-    font-size:12px;
-  }
-
-  .mpesa-icon{
-    width:27px;
-    height:32px;
-  }
-
-  .mpesa-word{
     font-size:14px;
   }
 
+  .step-btn{
+    width:34px;
+    height:34px;
+    font-size:20px;
+  }
+
+  .qty{
+    font-size:18px;
+  }
+
+  .total{
+    padding:9px 10px;
+    margin-bottom:9px;
+  }
+
+  .total strong{
+    font-size:20px;
+  }
+
+  .payment-title{
+    font-size:9px;
+    margin:3px 0 7px;
+  }
+
+  .pay-btn{
+    height:49px;
+    font-size:14px;
+  }
+
+  .mpesa-icon{
+    width:30px;
+    height:36px;
+  }
+
+  .mpesa-word{
+    font-size:16px;
+  }
+
   .card-pay-btn{
-    height:43px;
+    height:47px;
     font-size:9px;
   }
 
   .card-icon{
-    width:28px;
-    height:20px;
+    width:30px;
+    height:21px;
   }
 
   .visa{
-    font-size:10px;
-  }
-
-  .amex{
-    font-size:4.5px;
+    font-size:11px;
   }
 
   .footer{
-    font-size:6.5px;
+    font-size:7px;
   }
 
 }
@@ -1227,105 +1167,94 @@ body:after{
 @media(max-width:340px){
 
   .container{
-    padding-left:5px;
-    padding-right:5px;
+    padding:5px;
   }
 
   .form-card{
-    padding:7px 8px 6px;
-  }
-
-  .note{
-    font-size:7px;
-    padding:4px 5px;
+    padding:12px 10px 11px;
   }
 
   .offer{
+    font-size:12px;
+  }
+
+  .note{
     font-size:9px;
+    padding:7px;
   }
 
   .field input{
-    height:32px;
-    font-size:10px;
+    height:40px;
+    font-size:12px;
   }
 
   .ticket-row{
-    padding:5px 6px;
+    padding:8px;
   }
 
   .ticket-info{
-    font-size:9px;
-  }
-
-  .ticket-price{
     font-size:11px;
   }
 
-  .step-btn{
-    width:27px;
-    height:27px;
-    font-size:16px;
-  }
-
-  .qty{
-    font-size:15px;
-  }
-
-  .total{
-    padding:6px 8px;
-  }
-
-  .total strong{
-    font-size:16px;
-  }
-
-  .pay-btn{
-    height:40px;
-    font-size:10px;
-    gap:4px;
-  }
-
-  .mpesa-icon{
-    width:25px;
-    height:30px;
-  }
-
-  .mpesa-word{
+  .ticket-price{
     font-size:13px;
   }
 
+  .step-btn{
+    width:32px;
+    height:32px;
+    font-size:19px;
+  }
+
+  .qty{
+    font-size:17px;
+  }
+
+  .total{
+    padding:8px 9px;
+  }
+
+  .total strong{
+    font-size:19px;
+  }
+
+  .pay-btn{
+    height:47px;
+    font-size:13px;
+  }
+
+  .mpesa-icon{
+    width:29px;
+    height:34px;
+  }
+
+  .mpesa-word{
+    font-size:15px;
+  }
+
   .card-pay-btn{
-    height:40px;
+    height:45px;
     font-size:8px;
   }
 
   .card-icon{
-    width:26px;
-    height:19px;
+    width:28px;
+    height:20px;
   }
 
   .visa{
-    font-size:9px;
-  }
-
-  .mc{
-    transform:scale(.8);
-  }
-
-  .amex{
-    font-size:4px;
-    padding:2px;
+    font-size:10px;
   }
 
   .footer{
-    font-size:6px;
+    font-size:6.5px;
   }
 
 }
 
 
 /* =========================================================
-   NO HORIZONTAL / VERTICAL SCROLL
+   PREVENT SIDEWAYS MOVEMENT
    ========================================================= */
 
 html,
@@ -1335,7 +1264,6 @@ body,
 .ticket-row,
 .total,
 .pay-btn{
-  overflow:hidden !important;
   max-width:100%;
 }
 
