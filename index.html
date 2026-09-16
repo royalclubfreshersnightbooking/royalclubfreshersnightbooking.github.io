@@ -1,1609 +1,2986 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Freshers Night 2026 | Tickets</title>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--orange:#ff7a00;--gold:#ffb000;--white:#fff}
-html,body{min-height:100%;background:#050505}
-body{font-family:Arial,Helvetica,sans-serif;color:#fff;min-height:100vh;background-color:#050505;background-image:url("background.jpeg");background-repeat:no-repeat;background-position:center top;background-size:100% auto;background-attachment:scroll}
-body:after{display:none}
-.container{position:relative;z-index:1;width:100%;max-width:760px;margin:0 auto;padding:0 16px 30px}
-.spacer{height:100vw}
-.form-card{padding:20px 18px 18px;border:1px solid rgba(255,166,0,.75);border-radius:22px;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
-.offer{text-align:center;font-size:14px;font-weight:900;color:#fff;margin-bottom:15px}.offer strong{color:#ffb000}
-.field{margin-bottom:12px}.field label{display:block;margin-bottom:6px;font-size:12px;font-weight:900;letter-spacing:.5px;color:#fff}.field input{width:100%;height:50px;border:1px solid rgba(255,255,255,.24);border-radius:12px;padding:0 14px;background:transparent;color:#fff;font-size:15px;outline:none}.field input::placeholder{color:#bdbdbd}.field input:focus{border-color:#ff9a00;box-shadow:0 0 0 3px rgba(255,154,0,.13)}
-.ticket-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:14px 0;padding:14px 15px;border:1px solid rgba(255,166,0,.35);border-radius:15px;background:transparent}
-.ticket-info{font-weight:900}.ticket-info small{display:block;color:#bbb;font-size:11px;margin-top:3px}.ticket-price{font-size:20px;color:#ffb000;font-weight:1000;white-space:nowrap}
-.stepper{display:flex;align-items:center;gap:13px}.step-btn{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:linear-gradient(145deg,#303642,#11151c);color:#fff;font-size:25px;line-height:1;cursor:pointer}.step-btn:active{transform:scale(.96)}.qty{min-width:22px;text-align:center;font-size:22px;font-weight:1000}
-.total{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;margin-bottom:14px;border-radius:14px;background:transparent;border:1px solid rgba(255,166,0,.4)}.total span{font-size:13px;font-weight:900;color:#ddd}.total strong{font-size:25px;color:#ffb000;font-weight:1000}
-.payment-title{display:flex;align-items:center;gap:10px;margin:5px 0 11px;font-size:13px;font-weight:1000;letter-spacing:.8px}.payment-title:before,.payment-title:after{content:"";height:2px;flex:1;background:linear-gradient(90deg,transparent,#ff9a00)}.payment-title:after{background:linear-gradient(90deg,#ff9a00,transparent)}
-.pay-btn{width:100%;height:70px;border:0;border-radius:15px;cursor:pointer;font-size:18px;font-weight:1000;display:flex;align-items:center;justify-content:center;gap:14px;transition:.18s;box-shadow:0 9px 25px rgba(0,0,0,.32)}.pay-btn:hover{transform:translateY(-1px)}.pay-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}.mpesa-btn{background:linear-gradient(135deg,#12b82d,#46d631);color:#fff}.card-pay-btn{margin-top:11px;background:linear-gradient(135deg,#086bd0,#123e91);color:#fff}
-.mpesa-icon{position:relative;width:42px;height:48px;border:3px solid #fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;background:rgba(255,255,255,.08);box-shadow:0 0 0 2px rgba(255,255,255,.08),0 3px 10px rgba(0,0,0,.22);flex:0 0 auto}.mpesa-icon:before{content:"";position:absolute;top:5px;left:50%;transform:translateX(-50%);width:13px;height:3px;border-radius:3px;background:#fff;opacity:.95}.mpesa-icon:after{content:"";position:absolute;right:-15px;top:17px;width:17px;height:10px;border-top:4px solid #e5222e;border-right:4px solid #e5222e;transform:skewX(-25deg) rotate(-7deg);filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}.mpesa-word{font-size:20px;letter-spacing:.4px;font-weight:1000}
-.card-icon{width:44px;height:31px;border:3px solid #fff;border-radius:6px;position:relative}.card-icon:before{content:"";position:absolute;left:0;right:0;top:7px;height:5px;background:#fff}.brands{display:flex;align-items:center;gap:8px}.visa{font-size:18px;font-weight:1000;font-style:italic}.mc{position:relative;width:31px;height:18px}.mc:before,.mc:after{content:"";position:absolute;top:0;width:18px;height:18px;border-radius:50%}.mc:before{left:0;background:#f04444}.mc:after{right:0;background:#ffb21a}.amex{font-size:8px;font-weight:1000;border:1px solid #fff;border-radius:3px;padding:3px 4px}
-.note{text-align:center;margin:0 0 15px;padding:11px 10px;color:#fff;font-size:12px;font-weight:900;border:1px solid rgba(255,45,45,.85);border-radius:12px;background:rgba(110,0,0,.38);text-shadow:0 1px 4px #000;animation:ticketAlert 1.15s ease-in-out infinite}.note strong{color:#ff3b30;text-shadow:0 0 7px rgba(255,0,0,.9)}@keyframes ticketAlert{0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(255,30,30,0),0 0 8px rgba(255,30,30,.35)}50%{opacity:.72;transform:scale(1.015);box-shadow:0 0 0 3px rgba(255,30,30,.16),0 0 20px rgba(255,30,30,.75)}}.status{display:none;margin-top:12px;padding:12px;border-radius:11px;font-size:12px;line-height:1.35;text-align:center;font-weight:700}.status.show{display:block}.status.info{background:rgba(40,90,150,.4);color:#dcecff}.status.success{background:rgba(30,130,60,.4);color:#d8ffe4}.status.error{background:rgba(170,30,30,.4);color:#ffdede}.download-btn{display:none;width:100%;height:54px;margin-top:10px;border:1px solid #ffb000;border-radius:13px;background:linear-gradient(135deg,#ff7a00,#ffb000);color:#111;font-size:15px;font-weight:1000;cursor:pointer}.download-btn.show{display:block}.footer{text-align:center;padding:13px 0 0;color:#ddd;font-size:10px;text-shadow:0 2px 8px #000}.footer strong{color:#ffb000}.spinner{width:17px;height:17px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --orange:#ff7a00;
+  --gold:#ffb000;
+  --white:#fff;
+}
+
+html,
+body{
+  width:100%;
+  max-width:100%;
+  min-height:100%;
+  margin:0;
+  padding:0;
+  overflow-x:hidden;
+  background:#050505;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  color:#fff;
+  min-height:100vh;
+
+  background-color:#050505;
+  background-image:url("background.jpeg");
+  background-repeat:no-repeat;
+  background-position:center top;
+  background-size:100% auto;
+  background-attachment:scroll;
+
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+body:after{
+  display:none;
+}
+
+.container{
+  position:relative;
+  z-index:1;
+
+  width:100%;
+  max-width:430px;
+
+  margin:0 auto;
+
+  padding:0 12px 30px;
+
+  overflow-x:hidden;
+}
+
+.spacer{
+  height:115vw;
+}
+
+.form-card{
+  width:100%;
+
+  padding:20px 18px 18px;
+
+  border:1px solid rgba(255,166,0,.75);
+  border-radius:22px;
+
+  background:transparent;
+
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+
+  box-shadow:none;
+
+  overflow:hidden;
+}
+
+.offer{
+  text-align:center;
+  font-size:14px;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:15px;
+}
+
+.offer strong{
+  color:#ffb000;
+}
+
+.field{
+  margin-bottom:12px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.5px;
+  color:#fff;
+}
+
+.field input{
+  width:100%;
+  max-width:100%;
+  height:50px;
+
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:12px;
+
+  padding:0 14px;
+
+  background:transparent;
+  color:#fff;
+
+  font-size:15px;
+  outline:none;
+
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.field input::placeholder{
+  color:#bdbdbd;
+}
+
+.field input:focus{
+  border-color:#ff9a00;
+  box-shadow:0 0 0 3px rgba(255,154,0,.13);
+}
+
+.ticket-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  gap:8px;
+
+  width:100%;
+  max-width:100%;
+
+  margin:14px 0;
+  padding:14px 12px;
+
+  border:1px solid rgba(255,166,0,.35);
+  border-radius:15px;
+
+  background:transparent;
+
+  overflow:hidden;
+}
+
+.ticket-info{
+  font-weight:900;
+  min-width:0;
+  flex:1 1 auto;
+}
+
+.ticket-info small{
+  display:block;
+  color:#bbb;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.ticket-price{
+  font-size:20px;
+  color:#ffb000;
+  font-weight:1000;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+
+.stepper{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
+}
+
+.step-btn{
+  width:42px;
+  height:42px;
+
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.35);
+
+  background:linear-gradient(
+    145deg,
+    #303642,
+    #11151c
+  );
+
+  color:#fff;
+
+  font-size:25px;
+  line-height:1;
+
+  cursor:pointer;
+
+  flex:0 0 auto;
+}
+
+.step-btn:active{
+  transform:scale(.96);
+}
+
+.qty{
+  min-width:22px;
+  text-align:center;
+  font-size:22px;
+  font-weight:1000;
+  flex:0 0 auto;
+}
+
+.total{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  width:100%;
+  max-width:100%;
+
+  padding:15px 16px;
+  margin-bottom:14px;
+
+  border-radius:14px;
+
+  background:transparent;
+
+  border:1px solid rgba(255,166,0,.4);
+
+  overflow:hidden;
+}
+
+.total span{
+  font-size:13px;
+  font-weight:900;
+  color:#ddd;
+}
+
+.total strong{
+  font-size:25px;
+  color:#ffb000;
+  font-weight:1000;
+  white-space:nowrap;
+}
+
+.payment-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  width:100%;
+
+  margin:5px 0 11px;
+
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.8px;
+
+  white-space:nowrap;
+}
+
+.payment-title:before,
+.payment-title:after{
+  content:"";
+  height:2px;
+  flex:1;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #ff9a00
+  );
+}
+
+.payment-title:after{
+  background:linear-gradient(
+    90deg,
+    #ff9a00,
+    transparent
+  );
+}
+
+.pay-btn{
+  width:100%;
+  max-width:100%;
+
+  height:70px;
+
+  border:0;
+  border-radius:15px;
+
+  cursor:pointer;
+
+  font-size:18px;
+  font-weight:1000;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:14px;
+
+  transition:.18s;
+
+  box-shadow:
+    0 9px 25px rgba(0,0,0,.32);
+
+  overflow:hidden;
+
+  white-space:nowrap;
+}
+
+.pay-btn:hover{
+  transform:translateY(-1px);
+}
+
+.pay-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.mpesa-btn{
+  background:linear-gradient(
+    135deg,
+    #12b82d,
+    #46d631
+  );
+
+  color:#fff;
+}
+
+.card-pay-btn{
+  margin-top:11px;
+
+  background:linear-gradient(
+    135deg,
+    #086bd0,
+    #123e91
+  );
+
+  color:#fff;
+}
+
+.mpesa-icon{
+  position:relative;
+
+  width:42px;
+  height:48px;
+
+  border:3px solid #fff;
+  border-radius:10px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:12px;
+  font-weight:1000;
+
+  background:rgba(255,255,255,.08);
+
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.08),
+    0 3px 10px rgba(0,0,0,.22);
+
+  flex:0 0 auto;
+}
+
+.mpesa-icon:before{
+  content:"";
+
+  position:absolute;
+
+  top:5px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:13px;
+  height:3px;
+
+  border-radius:3px;
+
+  background:#fff;
+
+  opacity:.95;
+}
+
+.mpesa-icon:after{
+  content:"";
+
+  position:absolute;
+
+  right:-15px;
+  top:17px;
+
+  width:17px;
+  height:10px;
+
+  border-top:4px solid #e5222e;
+  border-right:4px solid #e5222e;
+
+  transform:
+    skewX(-25deg)
+    rotate(-7deg);
+
+  filter:
+    drop-shadow(
+      0 1px 1px rgba(0,0,0,.35)
+    );
+}
+
+.mpesa-word{
+  font-size:20px;
+  letter-spacing:.4px;
+  font-weight:1000;
+}
+
+.card-icon{
+  width:44px;
+  height:31px;
+
+  border:3px solid #fff;
+  border-radius:6px;
+
+  position:relative;
+
+  flex:0 0 auto;
+}
+
+.card-icon:before{
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+  top:7px;
+
+  height:5px;
+
+  background:#fff;
+}
+
+.brands{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  flex:0 0 auto;
+}
+
+.visa{
+  font-size:18px;
+  font-weight:1000;
+  font-style:italic;
+}
+
+.mc{
+  position:relative;
+
+  width:31px;
+  height:18px;
+
+  flex:0 0 auto;
+}
+
+.mc:before,
+.mc:after{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+}
+
+.mc:before{
+  left:0;
+  background:#f04444;
+}
+
+.mc:after{
+  right:0;
+  background:#ffb21a;
+}
+
+.amex{
+  font-size:8px;
+  font-weight:1000;
+
+  border:1px solid #fff;
+  border-radius:3px;
+
+  padding:3px 4px;
+
+  white-space:nowrap;
+}
+
+.note{
+  text-align:center;
+
+  margin:0 0 15px;
+  padding:11px 10px;
+
+  color:#fff;
+
+  font-size:12px;
+  font-weight:900;
+
+  border:1px solid rgba(255,45,45,.85);
+  border-radius:12px;
+
+  background:rgba(110,0,0,.38);
+
+  text-shadow:0 1px 4px #000;
+
+  animation:
+    ticketAlert
+    1.15s
+    ease-in-out
+    infinite;
+}
+
+.note strong{
+  color:#ff3b30;
+
+  text-shadow:
+    0 0 7px rgba(255,0,0,.9);
+}
+
+@keyframes ticketAlert{
+
+  0%,100%{
+    opacity:1;
+    transform:scale(1);
+
+    box-shadow:
+      0 0 0 0 rgba(255,30,30,0),
+      0 0 8px rgba(255,30,30,.35);
+  }
+
+  50%{
+    opacity:.72;
+    transform:scale(1.015);
+
+    box-shadow:
+      0 0 0 3px rgba(255,30,30,.16),
+      0 0 20px rgba(255,30,30,.75);
+  }
+
+}
+
+.status{
+  display:none;
+
+  margin-top:12px;
+  padding:12px;
+
+  border-radius:11px;
+
+  font-size:12px;
+  line-height:1.35;
+
+  text-align:center;
+  font-weight:700;
+}
+
+.status.show{
+  display:block;
+}
+
+.status.info{
+  background:rgba(40,90,150,.4);
+  color:#dcecff;
+}
+
+.status.success{
+  background:rgba(30,130,60,.4);
+  color:#d8ffe4;
+}
+
+.status.error{
+  background:rgba(170,30,30,.4);
+  color:#ffdede;
+}
+
+.download-btn{
+  display:none;
+
+  width:100%;
+  height:54px;
+
+  margin-top:10px;
+
+  border:1px solid #ffb000;
+  border-radius:13px;
+
+  background:linear-gradient(
+    135deg,
+    #ff7a00,
+    #ffb000
+  );
+
+  color:#111;
+
+  font-size:15px;
+  font-weight:1000;
+
+  cursor:pointer;
+}
+
+.download-btn.show{
+  display:block;
+}
+
+.footer{
+  text-align:center;
+
+  padding:13px 0 0;
+
+  color:#ddd;
+
+  font-size:10px;
+
+  text-shadow:
+    0 2px 8px #000;
+}
+
+.footer strong{
+  color:#ffb000;
+}
+
+.spinner{
+  width:17px;
+  height:17px;
+
+  border:3px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+
+  border-radius:50%;
+
+  display:inline-block;
+
+  animation:
+    spin
+    .7s
+    linear
+    infinite;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   MOBILE — FULL PAGE / NO SCROLL
+   ========================================================= */
+
 @media(max-width:600px){
-  html,body{background:#000;min-height:100%;}
-  body{position:relative;background-image:none;}
-  body::before{
-    content:"";
+
+  html,
+  body{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    max-width:100%;
+    min-width:0;
+
+    overflow:hidden !important;
+
+    background:#000;
+  }
+
+  body{
     position:fixed;
     inset:0;
+
+    background-image:none;
+
+    overscroll-behavior:none;
+  }
+
+  body::before{
+    content:"";
+
+    position:fixed;
+    inset:0;
+
     z-index:0;
-    background-image:url("background.jpeg");
-    background-repeat:no-repeat;
-    background-position:center top;
-    background-size:100% 100%;
+
+    background:url("background.jpeg")
+      center center /
+      cover
+      no-repeat;
+
+    background-color:#111;
+
     pointer-events:none;
   }
-  .container{position:relative;z-index:1;padding:0 12px 24px}
-  .spacer{height:115vw}
-  .form-card,.ticket-row,.total,.field input{background:transparent !important;box-shadow:none !important;}
-  .form-card{padding:16px 14px 15px}
-  .pay-btn{height:62px}
-  .mpesa-word{font-size:18px}
-  .brands{gap:6px}
+
+  .container{
+    position:fixed;
+
+    inset:0;
+
+    z-index:1;
+
+    width:100%;
+    max-width:430px;
+    height:100dvh;
+    min-height:0;
+
+    margin:0 auto;
+
+    padding:6px 10px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden !important;
+  }
+
+  .spacer{
+    display:none;
+  }
+
+  .form-card{
+    width:100%;
+    max-width:430px;
+
+    padding:9px 11px 8px;
+
+    border:1px solid rgba(255,184,0,.95);
+    border-radius:18px;
+
+    background:
+      rgba(18,10,2,.38) !important;
+
+    box-shadow:
+      0 5px 20px rgba(0,0,0,.35);
+
+    overflow:hidden !important;
+
+    flex:0 1 auto;
+  }
+
+  .offer{
+    font-size:11px;
+    margin-bottom:7px;
+
+    color:#fff;
+
+    text-shadow:
+      0 2px 5px #000;
+  }
+
+  .offer strong{
+    color:#ffd21a;
+
+    text-shadow:
+      0 1px 4px #000;
+  }
+
+  .note{
+    margin:0 0 7px;
+    padding:6px 7px;
+
+    font-size:9px;
+
+    border-radius:9px;
+
+    line-height:1.15;
+  }
+
+  .field{
+    margin-bottom:6px;
+  }
+
+  .field label{
+    margin-bottom:3px;
+
+    font-size:9px;
+    letter-spacing:.3px;
+  }
+
+  .field input{
+    width:100%;
+    height:37px;
+
+    padding:0 9px;
+
+    border-radius:9px;
+
+    font-size:12px;
+
+    background:
+      rgba(0,0,0,.48) !important;
+
+    border:
+      1px solid rgba(255,255,255,.65);
+
+    color:#fff;
+  }
+
+  .field input::placeholder{
+    color:#e8e8e8;
+  }
+
+  .ticket-row{
+    width:100%;
+
+    margin:7px 0;
+    padding:7px 8px;
+
+    gap:4px;
+
+    border-radius:10px;
+
+    background:
+      rgba(0,0,0,.36) !important;
+
+    border:
+      1px solid rgba(255,190,0,.70);
+  }
+
+  .ticket-info{
+    font-size:11px;
+
+    color:#fff;
+
+    text-shadow:
+      0 2px 5px #000;
+  }
+
+  .ticket-info small{
+    font-size:8px;
+    margin-top:1px;
+
+    color:#f1f1f1;
+  }
+
+  .ticket-price{
+    font-size:13px;
+
+    color:#20e65a;
+
+    text-shadow:
+      0 1px 5px rgba(0,0,0,.9);
+  }
+
+  .stepper{
+    gap:4px;
+  }
+
+  .step-btn{
+    width:31px;
+    height:31px;
+
+    font-size:18px;
+
+    border:
+      1px solid #ffd21a;
+
+    background:
+      rgba(255,255,255,.16);
+  }
+
+  .qty{
+    min-width:17px;
+
+    font-size:17px;
+
+    color:#fff;
+
+    text-shadow:
+      0 2px 4px #000;
+  }
+
+  .total{
+    width:100%;
+
+    padding:8px 10px;
+    margin-bottom:7px;
+
+    border-radius:10px;
+
+    background:
+      rgba(0,0,0,.36) !important;
+
+    border:
+      1px solid rgba(255,190,0,.70);
+  }
+
+  .total span{
+    font-size:10px;
+  }
+
+  .total strong{
+    font-size:18px;
+
+    color:#20e65a;
+
+    text-shadow:
+      0 1px 5px rgba(0,0,0,.9);
+  }
+
+  .payment-title{
+    gap:6px;
+
+    margin:3px 0 6px;
+
+    font-size:9px;
+    letter-spacing:.5px;
+  }
+
+  .payment-title:before,
+  .payment-title:after{
+    height:1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        #ffd21a
+      );
+  }
+
+  .payment-title:after{
+    background:
+      linear-gradient(
+        90deg,
+        #ffd21a,
+        transparent
+      );
+  }
+
+  .pay-btn{
+    width:100%;
+
+    height:46px;
+
+    border-radius:10px;
+
+    gap:7px;
+
+    font-size:13px;
+
+    box-shadow:
+      0 5px 14px rgba(0,0,0,.28);
+  }
+
+  .mpesa-icon{
+    width:29px;
+    height:34px;
+
+    border-width:2px;
+    border-radius:7px;
+
+    font-size:9px;
+  }
+
+  .mpesa-icon:before{
+    top:3px;
+
+    width:9px;
+    height:2px;
+  }
+
+  .mpesa-icon:after{
+    right:-10px;
+    top:11px;
+
+    width:12px;
+    height:7px;
+
+    border-top-width:3px;
+    border-right-width:3px;
+  }
+
+  .mpesa-word{
+    font-size:15px;
+  }
+
+  .card-pay-btn{
+    margin-top:6px;
+
+    gap:5px;
+
+    font-size:10px;
+  }
+
+  .card-icon{
+    width:30px;
+    height:22px;
+
+    border-width:2px;
+    border-radius:4px;
+  }
+
+  .card-icon:before{
+    top:5px;
+    height:3px;
+  }
+
+  .brands{
+    gap:4px;
+  }
+
+  .visa{
+    font-size:11px;
+  }
+
+  .mc{
+    width:22px;
+    height:13px;
+  }
+
+  .mc:before,
+  .mc:after{
+    width:13px;
+    height:13px;
+  }
+
+  .amex{
+    font-size:5px;
+
+    padding:2px 3px;
+
+    border-radius:2px;
+  }
+
+  .status{
+    margin-top:6px;
+
+    padding:6px 7px;
+
+    border-radius:8px;
+
+    font-size:9px;
+    line-height:1.2;
+  }
+
+  .download-btn{
+    height:39px;
+
+    margin-top:6px;
+
+    border-radius:9px;
+
+    font-size:11px;
+  }
+
+  .footer{
+    flex:0 0 auto;
+
+    padding:5px 0 0;
+
+    font-size:7px;
+
+    color:#fff;
+
+    text-shadow:
+      0 2px 7px #000;
+  }
+
+  .footer strong{
+    color:#ffb000;
+  }
+
 }
 
-/* MOBILE VISIBILITY POLISH — keeps the poster visible while improving contrast */
-@media(max-width:600px){
-  body::before{
-    background:url("background.jpeg") center top / 100% 100% no-repeat;
-    background-color:#111;
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media(max-width:390px){
+
+  .container{
+    padding-left:7px;
+    padding-right:7px;
   }
+
   .form-card{
-    border:1px solid rgba(255,184,0,.95);
-    background:rgba(18,10,2,.30) !important;
-    box-shadow:0 8px 28px rgba(0,0,0,.28);
+    padding:8px 9px 7px;
+    border-radius:16px;
   }
-  .offer{color:#fff;text-shadow:0 2px 5px #000}
-  .offer strong{color:#ffd21a;text-shadow:0 1px 4px #000}.ticket-price,.total strong{color:#20e65a;text-shadow:0 1px 5px rgba(0,0,0,.9);font-weight:1000}.note strong{color:#ff2b2b;text-shadow:0 0 8px rgba(255,0,0,.95)}
-  .field label,.ticket-info,.payment-title,.total span{
-    color:#fff;
-    text-shadow:0 2px 5px #000;
+
+  .note{
+    font-size:8px;
+    padding:5px 6px;
+    margin-bottom:6px;
   }
+
+  .offer{
+    font-size:10px;
+    margin-bottom:6px;
+  }
+
+  .field{
+    margin-bottom:5px;
+  }
+
+  .field label{
+    font-size:8px;
+  }
+
   .field input{
-    background:rgba(0,0,0,.48) !important;
-    border:1px solid rgba(255,255,255,.65);
-    color:#fff;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    height:34px;
+    font-size:11px;
   }
-  .field input::placeholder{color:#e8e8e8}
-  .ticket-row,.total{
-    background:rgba(0,0,0,.36) !important;
-    border:1px solid rgba(255,190,0,.70);
+
+  .ticket-row{
+    margin:6px 0;
+    padding:6px 7px;
   }
-  .ticket-info small{color:#f1f1f1}
+
+  .ticket-info{
+    font-size:10px;
+  }
+
+  .ticket-info small{
+    font-size:7px;
+  }
+
+  .ticket-price{
+    font-size:12px;
+  }
+
   .step-btn{
-    background:rgba(255,255,255,.16);
-    border:2px solid #ffd21a;
-    color:#fff;
-    text-shadow:0 1px 3px #000;
+    width:29px;
+    height:29px;
+    font-size:17px;
   }
-  .qty{color:#fff;text-shadow:0 2px 4px #000}
-  .payment-title:before,.payment-title:after{background:linear-gradient(90deg,transparent,#ffd21a)}
-  .payment-title:after{background:linear-gradient(90deg,#ffd21a,transparent)}
-  .note{color:#fff;border-color:rgba(255,35,35,.98);background:rgba(110,0,0,.48);text-shadow:0 2px 5px #000}
-  .footer{color:#fff;text-shadow:0 2px 7px #000}
+
+  .qty{
+    font-size:16px;
+  }
+
+  .total{
+    padding:7px 9px;
+    margin-bottom:6px;
+  }
+
+  .total span{
+    font-size:9px;
+  }
+
+  .total strong{
+    font-size:17px;
+  }
+
+  .payment-title{
+    font-size:8px;
+    margin:2px 0 5px;
+  }
+
+  .pay-btn{
+    height:43px;
+    font-size:12px;
+  }
+
+  .mpesa-icon{
+    width:27px;
+    height:32px;
+  }
+
+  .mpesa-word{
+    font-size:14px;
+  }
+
+  .card-pay-btn{
+    height:43px;
+    font-size:9px;
+  }
+
+  .card-icon{
+    width:28px;
+    height:20px;
+  }
+
+  .visa{
+    font-size:10px;
+  }
+
+  .amex{
+    font-size:4.5px;
+  }
+
+  .footer{
+    font-size:6.5px;
+  }
+
 }
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media(max-width:340px){
+
+  .container{
+    padding-left:5px;
+    padding-right:5px;
+  }
+
+  .form-card{
+    padding:7px 8px 6px;
+  }
+
+  .note{
+    font-size:7px;
+    padding:4px 5px;
+  }
+
+  .offer{
+    font-size:9px;
+  }
+
+  .field input{
+    height:32px;
+    font-size:10px;
+  }
+
+  .ticket-row{
+    padding:5px 6px;
+  }
+
+  .ticket-info{
+    font-size:9px;
+  }
+
+  .ticket-price{
+    font-size:11px;
+  }
+
+  .step-btn{
+    width:27px;
+    height:27px;
+    font-size:16px;
+  }
+
+  .qty{
+    font-size:15px;
+  }
+
+  .total{
+    padding:6px 8px;
+  }
+
+  .total strong{
+    font-size:16px;
+  }
+
+  .pay-btn{
+    height:40px;
+    font-size:10px;
+    gap:4px;
+  }
+
+  .mpesa-icon{
+    width:25px;
+    height:30px;
+  }
+
+  .mpesa-word{
+    font-size:13px;
+  }
+
+  .card-pay-btn{
+    height:40px;
+    font-size:8px;
+  }
+
+  .card-icon{
+    width:26px;
+    height:19px;
+  }
+
+  .visa{
+    font-size:9px;
+  }
+
+  .mc{
+    transform:scale(.8);
+  }
+
+  .amex{
+    font-size:4px;
+    padding:2px;
+  }
+
+  .footer{
+    font-size:6px;
+  }
+
+}
+
+
+/* =========================================================
+   NO HORIZONTAL / VERTICAL SCROLL
+   ========================================================= */
+
+html,
+body,
+.container,
+.form-card,
+.ticket-row,
+.total,
+.pay-btn{
+  overflow:hidden !important;
+  max-width:100%;
+}
+
+button,
+input{
+  touch-action:manipulation;
+}
+
 </style>
 </head>
+
 <body>
+
 <div class="container">
+
   <div class="spacer"></div>
+
   <div class="form-card">
-    <div class="note">🔒 <strong>Download your secure ticket after payment.</strong></div>
-    <div class="offer">🔥 <strong>LIMITED OFFER — KES 150 PER TICKET</strong></div>
-    <div class="field"><label for="name">FULL NAME</label><input type="text" id="name" placeholder="Enter your name" autocomplete="name"></div>
-    <div class="field"><label for="phone">PHONE NUMBER</label><input type="tel" id="phone" placeholder="07XXXXXXXX" inputmode="tel" autocomplete="tel"></div>
-    <div class="ticket-row">
-      <div class="ticket-info">TICKETS<small>KES 150 each</small></div>
-      <div class="stepper"><button class="step-btn" id="minusBtn" type="button" aria-label="Decrease tickets">−</button><span class="qty" id="quantity">1</span><button class="step-btn" id="plusBtn" type="button" aria-label="Increase tickets">+</button></div>
-      <div class="ticket-price" id="unitPrice">KES 150</div>
+
+    <div class="note">
+      🔒 <strong>Download your secure ticket after payment.</strong>
     </div>
-    <div class="total"><span>TOTAL</span><strong id="total">KES 150</strong></div>
-    <div class="payment-title">CHOOSE PAYMENT METHOD</div>
-    <button class="pay-btn mpesa-btn" id="payBtn" type="button"><span class="mpesa-icon">M</span><span class="mpesa-word">M-PESA</span></button>
-    <button class="pay-btn card-pay-btn" id="cardPayBtn" type="button"><span class="card-icon"></span><span>CREDIT / DEBIT CARD</span><span class="brands"><span class="visa">VISA</span><span class="mc"></span><span class="amex">AMERICAN<br>EXPRESS</span></span></button>
-    
-    <div class="status" id="status"></div>
-    <button class="download-btn" id="downloadBtn" type="button">🎟️ DOWNLOAD SECURE TICKET</button>
+
+    <div class="offer">
+      🔥 <strong>LIMITED OFFER — KES 150 PER TICKET</strong>
+    </div>
+
+    <div class="field">
+      <label for="name">FULL NAME</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        autocomplete="name"
+      >
+    </div>
+
+    <div class="field">
+      <label for="phone">PHONE NUMBER</label>
+      <input
+        type="tel"
+        id="phone"
+        placeholder="07XXXXXXXX"
+        inputmode="tel"
+        autocomplete="tel"
+      >
+    </div>
+
+    <div class="ticket-row">
+
+      <div class="ticket-info">
+        TICKETS
+        <small>KES 150 each</small>
+      </div>
+
+      <div class="stepper">
+
+        <button
+          class="step-btn"
+          id="minusBtn"
+          type="button"
+          aria-label="Decrease tickets"
+        >
+          −
+        </button>
+
+        <span
+          class="qty"
+          id="quantity"
+        >
+          1
+        </span>
+
+        <button
+          class="step-btn"
+          id="plusBtn"
+          type="button"
+          aria-label="Increase tickets"
+        >
+          +
+        </button>
+
+      </div>
+
+      <div
+        class="ticket-price"
+        id="unitPrice"
+      >
+        KES 150
+      </div>
+
+    </div>
+
+    <div class="total">
+
+      <span>TOTAL</span>
+
+      <strong id="total">
+        KES 150
+      </strong>
+
+    </div>
+
+    <div class="payment-title">
+      CHOOSE PAYMENT METHOD
+    </div>
+
+    <button
+      class="pay-btn mpesa-btn"
+      id="payBtn"
+      type="button"
+    >
+
+      <span class="mpesa-icon">
+        M
+      </span>
+
+      <span class="mpesa-word">
+        M-PESA
+      </span>
+
+    </button>
+
+    <button
+      class="pay-btn card-pay-btn"
+      id="cardPayBtn"
+      type="button"
+    >
+
+      <span class="card-icon"></span>
+
+      <span>
+        CREDIT / DEBIT CARD
+      </span>
+
+      <span class="brands">
+
+        <span class="visa">
+          VISA
+        </span>
+
+        <span class="mc"></span>
+
+        <span class="amex">
+          AMERICAN<br>
+          EXPRESS
+        </span>
+
+      </span>
+
+    </button>
+
+    <div
+      class="status"
+      id="status"
+    ></div>
+
+    <button
+      class="download-btn"
+      id="downloadBtn"
+      type="button"
+    >
+      🎟️ DOWNLOAD SECURE TICKET
+    </button>
+
   </div>
-  <div class="footer">Secure &amp; Fast Payment &nbsp;•&nbsp; Powered by <strong>Joskev Developers</strong></div>
+
+  <div class="footer">
+    Secure &amp; Fast Payment
+    &nbsp;•&nbsp;
+    Powered by
+    <strong>Joskev Developers</strong>
+  </div>
+
 </div>
+
+
 <script>
 
+/* =========================================================
+   EXISTING M-PESA CONFIGURATION
+   DO NOT CHANGE
+   ========================================================= */
 
- /* =========================================================
- EXISTING M-PESA CONFIGURATION
- DO NOT CHANGE
- ========================================================= */
+const PRICE = 150;
 
- const PRICE = 150;
+const PAYMENT_ENDPOINT =
+"https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-ticket";
 
- const PAYMENT_ENDPOINT =
- "https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-ticket";
 
+/* =========================================================
+   CARD CONFIGURATION
+   ========================================================= */
 
- /* =========================================================
- CARD CONFIGURATION
- ========================================================= */
+const PAYSTACK_PUBLIC_KEY = "";
 
- /*
- * ONLY YOUR PAYSTACK PUBLIC KEY GOES HERE.
- *
- * Example:
- *
- * pk_live_xxxxxxxxxxxxxxxxx
- *
- * NEVER put sk_live_ here.
- */
+const CARD_PAYMENT_ENDPOINT =
+"https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-card-ticket";
 
- const PAYSTACK_PUBLIC_KEY = "";
 
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
- /*
- * NEW CARD EDGE FUNCTION.
- *
- * This is completely separate from
- * the existing M-PESA function.
- */
+const nameInput =
+document.getElementById("name");
 
- const CARD_PAYMENT_ENDPOINT =
- "https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-card-ticket";
+const phoneInput =
+document.getElementById("phone");
 
+const quantityInput =
+document.getElementById("quantity");
 
- /* =========================================================
- ELEMENTS
- ========================================================= */
+const minusBtn =
+document.getElementById("minusBtn");
 
- const nameInput =
- document.getElementById("name");
+const plusBtn =
+document.getElementById("plusBtn");
 
+const totalEl =
+document.getElementById("total");
 
- const phoneInput =
- document.getElementById("phone");
+const payBtn =
+document.getElementById("payBtn");
 
- const quantityInput =
- document.getElementById("quantity");
+const cardPayBtn =
+document.getElementById("cardPayBtn");
 
- const minusBtn =
- document.getElementById("minusBtn");
+const statusEl =
+document.getElementById("status");
 
- const plusBtn =
- document.getElementById("plusBtn");
+const downloadBtn =
+document.getElementById("downloadBtn");
 
- const totalEl =
- document.getElementById("total");
 
- const payBtn =
- document.getElementById("payBtn");
+let paidOrder = null;
 
- const cardPayBtn =
- document.getElementById("cardPayBtn");
 
- const statusEl =
- document.getElementById("status");
+/* =========================================================
+   UPDATE TOTAL
+   ========================================================= */
 
- const downloadBtn =
- document.getElementById("downloadBtn");
+function updateTotal(){
 
+  const quantity =
+  Number(quantityInput.textContent);
 
- let paidOrder = null;
+  const amount =
+  PRICE * quantity;
 
+  totalEl.textContent =
+  "KES " +
+  amount.toLocaleString();
 
- /* =========================================================
- UPDATE TOTAL
- ========================================================= */
+}
 
- function updateTotal(){
 
- const quantity =
- Number(quantityInput.textContent);
+minusBtn.addEventListener(
+  "click",
+  function(){
 
- const amount =
- PRICE * quantity;
+    const current =
+    Number(quantityInput.textContent);
 
- totalEl.textContent =
- "KES " +
- amount.toLocaleString();
+    quantityInput.textContent =
+    String(
+      Math.max(1,current - 1)
+    );
 
- }
+    updateTotal();
 
+  }
+);
 
- minusBtn.addEventListener("click", function(){
-   const current = Number(quantityInput.textContent);
-   quantityInput.textContent = String(Math.max(1, current - 1));
-   updateTotal();
- });
 
- plusBtn.addEventListener("click", function(){
-   const current = Number(quantityInput.textContent);
-   quantityInput.textContent = String(Math.min(10, current + 1));
-   updateTotal();
- });
+plusBtn.addEventListener(
+  "click",
+  function(){
 
+    const current =
+    Number(quantityInput.textContent);
 
- /* =========================================================
- NORMALIZE PHONE
- ========================================================= */
+    quantityInput.textContent =
+    String(
+      Math.min(10,current + 1)
+    );
 
- function normalizePhone(value){
+    updateTotal();
 
- let phone =
- String(value || "")
- .trim()
- .replace(/\s+/g,"");
+  }
+);
 
- if(phone.startsWith("+254")){
- return phone;
- }
 
- if(phone.startsWith("254")){
- return "+" + phone;
- }
+/* =========================================================
+   NORMALIZE PHONE
+   ========================================================= */
 
- if(
- phone.startsWith("07") ||
- phone.startsWith("01")
- ){
- return "+254" +
- phone.substring(1);
- }
+function normalizePhone(value){
 
- if(
- phone.startsWith("7") ||
- phone.startsWith("1")
- ){
- return "+254" + phone;
- }
+  let phone =
+  String(value || "")
+  .trim()
+  .replace(/\s+/g,"");
 
- return phone;
+  if(phone.startsWith("+254")){
+    return phone;
+  }
 
- }
+  if(phone.startsWith("254")){
+    return "+" + phone;
+  }
 
+  if(
+    phone.startsWith("07") ||
+    phone.startsWith("01")
+  ){
+    return "+254" +
+    phone.substring(1);
+  }
 
- /* =========================================================
- SHOW STATUS
- ========================================================= */
+  if(
+    phone.startsWith("7") ||
+    phone.startsWith("1")
+  ){
+    return "+254" + phone;
+  }
 
- function showStatus(message,type){
+  return phone;
 
- statusEl.textContent =
- message;
+}
 
- statusEl.className =
- "status show " + type;
 
- }
+/* =========================================================
+   SHOW STATUS
+   ========================================================= */
 
+function showStatus(message,type){
 
- /* =========================================================
- ESCAPE HTML
- ========================================================= */
+  statusEl.textContent =
+  message;
 
- function escapeHtml(value){
+  statusEl.className =
+  "status show " + type;
 
- return String(value ?? "")
- .replace(/&/g,"&")
- .replace(/</g,"<")
- .replace(/>/g,">")
- .replace(/"/g,"&quot;")
- .replace(/'/g,"'");
+}
 
- }
 
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
 
- /* =========================================================
- EXISTING M-PESA PAYMENT
- KEEPING YOUR ORIGINAL FLOW
- ========================================================= */
+function escapeHtml(value){
 
- payBtn.addEventListener(
- "click",
- async function(){
+  return String(value ?? "")
+  .replace(/&/g,"&")
+  .replace(/</g,"<")
+  .replace(/>/g,">")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"'");
 
- const name =
- nameInput.value.trim();
+}
 
- const registrationNumber = "";
 
- const phone =
- normalizePhone(
- phoneInput.value
- );
+/* =========================================================
+   M-PESA PAYMENT
+   ========================================================= */
 
- const quantity =
- Number(
- quantityInput.textContent
- );
+payBtn.addEventListener(
+  "click",
+  async function(){
 
- const amount =
- PRICE * quantity;
+    const name =
+    nameInput.value.trim();
 
+    const registrationNumber =
+    "";
 
- /* NAME */
+    const phone =
+    normalizePhone(
+      phoneInput.value
+    );
 
- if(!name){
+    const quantity =
+    Number(
+      quantityInput.textContent
+    );
 
- showStatus(
- "Enter your full name.",
- "error"
- );
+    const amount =
+    PRICE * quantity;
 
- nameInput.focus();
 
- return;
+    if(!name){
 
- }
- /* PHONE */
+      showStatus(
+        "Enter your full name.",
+        "error"
+      );
 
- if(
- !/^\+254[17]\d{8}$/.test(phone)
- ){
+      nameInput.focus();
 
- showStatus(
- "Enter a valid Kenyan M-PESA number.",
- "error"
- );
+      return;
 
- phoneInput.focus();
+    }
 
- return;
 
- }
+    if(
+      !/^\+254[17]\d{8}$/.test(phone)
+    ){
 
+      showStatus(
+        "Enter a valid Kenyan M-PESA number.",
+        "error"
+      );
 
- payBtn.disabled = true;
+      phoneInput.focus();
 
- payBtn.innerHTML =
- '<span class="spinner"></span> PROCESSING...';
+      return;
 
- showStatus(
- "Sending M-PESA prompt...",
- "info"
- );
+    }
 
 
- try{
+    payBtn.disabled = true;
 
- const response =
- await fetch(
- PAYMENT_ENDPOINT,
- {
- method:"POST",
+    payBtn.innerHTML =
+    '<span class="spinner"></span> PROCESSING...';
 
- headers:{
- "Content-Type":
- "application/json"
- },
+    showStatus(
+      "Sending M-PESA prompt...",
+      "info"
+    );
 
- body:JSON.stringify({
 
- customerName:
- name,
+    try{
 
- registrationNumber:
- registrationNumber,
+      const response =
+      await fetch(
+        PAYMENT_ENDPOINT,
+        {
+          method:"POST",
 
- phone:
- phone,
+          headers:{
+            "Content-Type":
+            "application/json"
+          },
 
- ticketType:
- "UOK Freshers Night",
+          body:JSON.stringify({
 
- quantity:
- quantity,
+            customerName:
+            name,
 
- amount:
- amount
+            registrationNumber:
+            registrationNumber,
 
- })
+            phone:
+            phone,
 
- }
- );
+            ticketType:
+            "UOK Freshers Night",
 
+            quantity:
+            quantity,
 
- const data =
- await response.json();
+            amount:
+            amount
 
+          })
 
- console.log(
- "M-PESA response:",
- data
- );
+        }
+      );
 
 
- if(!response.ok){
+      const data =
+      await response.json();
 
- throw new Error(
- data.error ||
- data.message ||
- "Payment request failed."
- );
 
- }
+      console.log(
+        "M-PESA response:",
+        data
+      );
 
 
- const order = {
+      if(!response.ok){
 
- orderId:
- data.orderId || "",
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Payment request failed."
+        );
 
- reference:
- data.reference ||
- data.paystackReference ||
- "",
+      }
 
- customerName:
- name,
 
- registrationNumber:
- registrationNumber,
+      const order = {
 
- phone:
- phone,
+        orderId:
+        data.orderId || "",
 
- quantity:
- quantity,
+        reference:
+        data.reference ||
+        data.paystackReference ||
+        "",
 
- amount:
- amount,
+        customerName:
+        name,
 
- ticketType:
- "UOK Freshers Night",
+        registrationNumber:
+        registrationNumber,
 
- eventDate:
- "19 September 2026",
+        phone:
+        phone,
 
- paymentMethod:
- "M-PESA",
+        quantity:
+        quantity,
 
- createdAt:
- new Date().toISOString()
+        amount:
+        amount,
 
- };
+        ticketType:
+        "UOK Freshers Night",
 
+        eventDate:
+        "19 September 2026",
 
- localStorage.setItem(
- "uok_pending_ticket",
- JSON.stringify(order)
- );
+        paymentMethod:
+        "M-PESA",
 
+        createdAt:
+        new Date().toISOString()
 
- const paymentConfirmed =
+      };
 
- data.paid === true ||
 
- data.paymentConfirmed === true ||
+      localStorage.setItem(
+        "uok_pending_ticket",
+        JSON.stringify(order)
+      );
 
- [
- "PAID",
- "SUCCESS",
- "COMPLETED"
- ].includes(
- String(
- data.status || ""
- ).toUpperCase()
- );
 
+      const paymentConfirmed =
 
- if(paymentConfirmed){
+      data.paid === true ||
 
- paidOrder =
- order;
+      data.paymentConfirmed === true ||
 
- localStorage.setItem(
- "uok_paid_ticket",
- JSON.stringify(order)
- );
+      [
+        "PAID",
+        "SUCCESS",
+        "COMPLETED"
+      ].includes(
+        String(
+          data.status || ""
+        ).toUpperCase()
+      );
 
- showStatus(
- "Payment confirmed. Your ticket is ready.",
- "success"
- );
 
- downloadBtn.classList.add(
- "show"
- );
+      if(paymentConfirmed){
 
- }
+        paidOrder =
+        order;
 
- else{
+        localStorage.setItem(
+          "uok_paid_ticket",
+          JSON.stringify(order)
+        );
 
- showStatus(
- "M-PESA prompt sent. Check your phone and enter your PIN.",
- "info"
- );
+        showStatus(
+          "Payment confirmed. Your ticket is ready.",
+          "success"
+        );
 
- }
+        downloadBtn.classList.add(
+          "show"
+        );
 
+      }
 
- }catch(error){
+      else{
 
- console.error(
- "M-PESA payment error:",
- error
- );
+        showStatus(
+          "M-PESA prompt sent. Check your phone and enter your PIN.",
+          "info"
+        );
 
- showStatus(
- error.message ||
- "Something went wrong. Please try again.",
- "error"
- );
+      }
 
- }finally{
 
- payBtn.disabled = false;
+    }catch(error){
 
- payBtn.textContent =
- "PAY WITH M-PESA";
+      console.error(
+        "M-PESA payment error:",
+        error
+      );
 
- }
+      showStatus(
+        error.message ||
+        "Something went wrong. Please try again.",
+        "error"
+      );
 
- }
- );
+    }finally{
 
+      payBtn.disabled = false;
 
- /* =========================================================
- CARD PAYMENT INITIALIZATION
- ========================================================= */
+      payBtn.textContent =
+      "PAY WITH M-PESA";
 
- cardPayBtn.addEventListener(
- "click",
- async function(){
+    }
 
- const name =
- nameInput.value.trim();
+  }
+);
 
- const email = "";
 
- const registrationNumber = "";
+/* =========================================================
+   CARD PAYMENT INITIALIZATION
+   ========================================================= */
 
- const quantity =
- Number(
- quantityInput.textContent
- );
+cardPayBtn.addEventListener(
+  "click",
+  async function(){
 
- const amount =
- PRICE * quantity;
+    const name =
+    nameInput.value.trim();
 
+    const email =
+    "";
 
- /* NAME */
+    const registrationNumber =
+    "";
 
- if(!name){
+    const quantity =
+    Number(
+      quantityInput.textContent
+    );
 
- showStatus(
- "Enter your full name.",
- "error"
- );
+    const amount =
+    PRICE * quantity;
 
- nameInput.focus();
 
- return;
+    if(!name){
 
- }
-cardPayBtn.disabled = true;
- payBtn.disabled = true;
+      showStatus(
+        "Enter your full name.",
+        "error"
+      );
 
- cardPayBtn.innerHTML =
- '<span class="spinner"></span> STARTING...';
+      nameInput.focus();
 
- showStatus(
- "Connecting securely to Paystack...",
- "info"
- );
+      return;
 
+    }
 
- try{
 
- /*
- * The amount is sent for reference only.
- *
- * The SERVER independently calculates:
- *
- * the configured ticket price × quantity
- *
- * so the browser cannot change the real ticket price.
- */
+    cardPayBtn.disabled = true;
 
- const response =
- await fetch(
- CARD_PAYMENT_ENDPOINT,
- {
- method:"POST",
+    payBtn.disabled = true;
 
- headers:{
- "Content-Type":
- "application/json"
- },
+    cardPayBtn.innerHTML =
+    '<span class="spinner"></span> STARTING...';
 
- body:JSON.stringify({
+    showStatus(
+      "Connecting securely to Paystack...",
+      "info"
+    );
 
- action:
- "initialize",
 
- customerName:
- name,
+    try{
 
- email:
- email,
+      const response =
+      await fetch(
+        CARD_PAYMENT_ENDPOINT,
+        {
+          method:"POST",
 
- registrationNumber:
- registrationNumber,
+          headers:{
+            "Content-Type":
+            "application/json"
+          },
 
- ticketType:
- "UOK Freshers Night",
+          body:JSON.stringify({
 
- quantity:
- quantity,
+            action:
+            "initialize",
 
- amount:
- amount
+            customerName:
+            name,
 
- })
+            email:
+            email,
 
- }
- );
+            registrationNumber:
+            registrationNumber,
 
+            ticketType:
+            "UOK Freshers Night",
 
- const data =
- await response.json();
+            quantity:
+            quantity,
 
+            amount:
+            amount
 
- console.log(
- "Card initialization:",
- data
- );
+          })
 
+        }
+      );
 
- if(!response.ok){
 
- throw new Error(
- data.error ||
- data.message ||
- "Could not initialize card payment."
- );
+      const data =
+      await response.json();
 
- }
 
+      console.log(
+        "Card initialization:",
+        data
+      );
 
- if(!data.success){
 
- throw new Error(
- data.message ||
- "Could not initialize card payment."
- );
+      if(!response.ok){
 
- }
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Could not initialize card payment."
+        );
 
+      }
 
- const authorizationUrl =
- data.authorization_url;
 
- const reference =
- data.reference || "";
+      if(!data.success){
 
+        throw new Error(
+          data.message ||
+          "Could not initialize card payment."
+        );
 
- if(!authorizationUrl){
+      }
 
- throw new Error(
- "Paystack did not return a payment URL."
- );
 
- }
+      const authorizationUrl =
+      data.authorization_url;
 
+      const reference =
+      data.reference || "";
 
- /*
- * Save pending card order.
- */
 
- const cardOrder = {
+      if(!authorizationUrl){
 
- orderId:
- data.orderId || "",
+        throw new Error(
+          "Paystack did not return a payment URL."
+        );
 
- reference:
- reference,
+      }
 
- customerName:
- name,
 
- email:
- email,
+      const cardOrder = {
 
- registrationNumber:
- registrationNumber,
+        orderId:
+        data.orderId || "",
 
- quantity:
- quantity,
+        reference:
+        reference,
 
- amount:
- amount,
+        customerName:
+        name,
 
- ticketType:
- "UOK Freshers Night",
+        email:
+        email,
 
- eventDate:
- "19 September 2026",
+        registrationNumber:
+        registrationNumber,
 
- paymentMethod:
- "CARD",
+        quantity:
+        quantity,
 
- paymentStatus:
- "pending",
+        amount:
+        amount,
 
- createdAt:
- new Date().toISOString()
+        ticketType:
+        "UOK Freshers Night",
 
- };
+        eventDate:
+        "19 September 2026",
 
+        paymentMethod:
+        "CARD",
 
- localStorage.setItem(
- "uok_pending_card_ticket",
- JSON.stringify(cardOrder)
- );
+        paymentStatus:
+        "pending",
 
+        createdAt:
+        new Date().toISOString()
 
- showStatus(
- "Opening secure Paystack card payment...",
- "info"
- );
+      };
 
 
- /*
- * Send customer to Paystack.
- *
- * Visa/Mastercard selection happens
- * securely on Paystack.
- */
+      localStorage.setItem(
+        "uok_pending_card_ticket",
+        JSON.stringify(cardOrder)
+      );
 
- setTimeout(
- function(){
 
- window.location.href =
- authorizationUrl;
+      showStatus(
+        "Opening secure Paystack card payment...",
+        "info"
+      );
 
- },
- 500
- );
 
+      setTimeout(
+        function(){
 
- }catch(error){
+          window.location.href =
+          authorizationUrl;
 
- console.error(
- "Card payment error:",
- error
- );
+        },
+        500
+      );
 
 
- showStatus(
- error.message ||
- "Could not start card payment. Please try again.",
- "error"
- );
+    }catch(error){
 
+      console.error(
+        "Card payment error:",
+        error
+      );
 
- cardPayBtn.disabled = false;
 
- payBtn.disabled = false;
+      showStatus(
+        error.message ||
+        "Could not start card payment. Please try again.",
+        "error"
+      );
 
- cardPayBtn.textContent =
- "💳 PAY WITH CARD";
 
- }
+      cardPayBtn.disabled = false;
 
- }
- );
+      payBtn.disabled = false;
 
+      cardPayBtn.textContent =
+      "💳 PAY WITH CARD";
 
- /* =========================================================
- VERIFY CARD PAYMENT AFTER PAYSTACK RETURNS
- ========================================================= */
+    }
 
- async function verifyReturnedCardPayment(){
+  }
+);
 
- const params =
- new URLSearchParams(
- window.location.search
- );
 
+/* =========================================================
+   VERIFY CARD PAYMENT AFTER PAYSTACK RETURNS
+   ========================================================= */
 
- const reference =
- params.get("reference") ||
- params.get("trxref");
+async function verifyReturnedCardPayment(){
 
+  const params =
+  new URLSearchParams(
+    window.location.search
+  );
 
- /*
- * No Paystack reference means
- * normal page opening.
- */
 
- if(!reference){
+  const reference =
+  params.get("reference") ||
+  params.get("trxref");
 
- return;
 
- }
+  if(!reference){
 
+    return;
 
- showStatus(
- "Verifying your card payment...",
- "info"
- );
+  }
 
 
- payBtn.disabled = true;
- cardPayBtn.disabled = true;
+  showStatus(
+    "Verifying your card payment...",
+    "info"
+  );
 
 
- try{
+  payBtn.disabled = true;
 
- const response =
- await fetch(
- CARD_PAYMENT_ENDPOINT,
- {
- method:"POST",
+  cardPayBtn.disabled = true;
 
- headers:{
- "Content-Type":
- "application/json"
- },
 
- body:JSON.stringify({
+  try{
 
- action:
- "verify",
+    const response =
+    await fetch(
+      CARD_PAYMENT_ENDPOINT,
+      {
+        method:"POST",
 
- reference:
- reference
+        headers:{
+          "Content-Type":
+          "application/json"
+        },
 
- })
+        body:JSON.stringify({
 
- }
- );
+          action:
+          "verify",
 
+          reference:
+          reference
 
- const data =
- await response.json();
+        })
 
+      }
+    );
 
- console.log(
- "Card verification:",
- data
- );
 
+    const data =
+    await response.json();
 
- if(!response.ok){
 
- throw new Error(
- data.message ||
- data.error ||
- "Payment verification failed."
- );
+    console.log(
+      "Card verification:",
+      data
+    );
 
- }
 
+    if(!response.ok){
 
- /*
- * PAYMENT SUCCESSFULLY VERIFIED
- */
+      throw new Error(
+        data.message ||
+        data.error ||
+        "Payment verification failed."
+      );
 
- if(
- data.success &&
- data.paid === true &&
- data.paymentConfirmed === true &&
- data.order
- ){
+    }
 
- const order =
- data.order;
 
+    if(
+      data.success &&
+      data.paid === true &&
+      data.paymentConfirmed === true &&
+      data.order
+    ){
 
- paidOrder = {
+      const order =
+      data.order;
 
- orderId:
- order.id,
 
- reference:
- order.reference,
+      paidOrder = {
 
- customerName:
- order.customerName,
+        orderId:
+        order.id,
 
- email:
- order.customerEmail || "",
+        reference:
+        order.reference,
 
- registrationNumber:
- order.registrationNumber,
+        customerName:
+        order.customerName,
 
- phone:
- order.customerPhone || "",
+        email:
+        order.customerEmail || "",
 
- quantity:
- Number(order.quantity),
+        registrationNumber:
+        order.registrationNumber,
 
- amount:
- Number(order.amount),
+        phone:
+        order.customerPhone || "",
 
- ticketType:
- order.ticketType ||
- "UOK Freshers Night",
+        quantity:
+        Number(order.quantity),
 
- eventDate:
- "19 September 2026",
+        amount:
+        Number(order.amount),
 
- paymentMethod:
- "CARD",
+        ticketType:
+        order.ticketType ||
+        "UOK Freshers Night",
 
- paymentStatus:
- "PAID",
+        eventDate:
+        "19 September 2026",
 
- createdAt:
- new Date().toISOString()
+        paymentMethod:
+        "CARD",
 
- };
+        paymentStatus:
+        "PAID",
 
+        createdAt:
+        new Date().toISOString()
 
- /*
- * Save confirmed ticket.
- */
+      };
 
- localStorage.setItem(
- "uok_paid_ticket",
- JSON.stringify(paidOrder)
- );
 
+      localStorage.setItem(
+        "uok_paid_ticket",
+        JSON.stringify(paidOrder)
+      );
 
- localStorage.removeItem(
- "uok_pending_card_ticket"
- );
 
+      localStorage.removeItem(
+        "uok_pending_card_ticket"
+      );
 
- localStorage.removeItem(
- "uok_pending_ticket"
- );
 
+      localStorage.removeItem(
+        "uok_pending_ticket"
+      );
 
- /*
- * Remove reference from browser URL.
- */
 
- window.history.replaceState(
- {},
- document.title,
- window.location.pathname
- );
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
 
 
- showStatus(
- "Card payment confirmed successfully! Your ticket is ready.",
- "success"
- );
+      showStatus(
+        "Card payment confirmed successfully! Your ticket is ready.",
+        "success"
+      );
 
 
- downloadBtn.classList.add(
- "show"
- );
+      downloadBtn.classList.add(
+        "show"
+      );
 
 
- /*
- * Automatically offer the ticket.
- */
+      setTimeout(
+        function(){
 
- setTimeout(
- function(){
+          downloadBtn.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+          });
 
- downloadBtn.scrollIntoView({
- behavior:"smooth",
- block:"center"
- });
+        },
+        300
+      );
 
- },
- 300
- );
 
+      return;
 
- return;
+    }
 
- }
 
+    throw new Error(
+      data.message ||
+      "The card payment could not be confirmed."
+    );
 
- /*
- * Payment was not successful.
- */
 
- throw new Error(
- data.message ||
- "The card payment could not be confirmed."
- );
+  }catch(error){
 
+    console.error(
+      "Card verification error:",
+      error
+    );
 
- }catch(error){
 
- console.error(
- "Card verification error:",
- error
- );
+    showStatus(
+      error.message ||
+      "We could not confirm your card payment. Please contact support before making another payment.",
+      "error"
+    );
 
 
- showStatus(
- error.message ||
- "We could not confirm your card payment. Please contact support before making another payment.",
- "error"
- );
+  }finally{
 
+    payBtn.disabled = false;
 
- }finally{
+    cardPayBtn.disabled = false;
 
- payBtn.disabled = false;
- cardPayBtn.disabled = false;
+    cardPayBtn.textContent =
+    "💳 PAY WITH CARD";
 
- cardPayBtn.textContent =
- "💳 PAY WITH CARD";
+  }
 
- }
+}
 
- }
 
+/* =========================================================
+   DOWNLOAD TICKET
+   ========================================================= */
 
- /* =========================================================
- DOWNLOAD TICKET
- ========================================================= */
+downloadBtn.addEventListener(
+  "click",
+  function(){
 
- downloadBtn.addEventListener(
- "click",
- function(){
+    if(!paidOrder){
 
- if(!paidOrder){
+      const saved =
+      localStorage.getItem(
+        "uok_paid_ticket"
+      );
 
- const saved =
- localStorage.getItem(
- "uok_paid_ticket"
- );
 
- if(saved){
+      if(saved){
 
- try{
+        try{
 
- paidOrder =
- JSON.parse(saved);
+          paidOrder =
+          JSON.parse(saved);
 
- }catch(error){
+        }catch(error){
 
- console.error(
- "Could not restore ticket:",
- error
- );
+          console.error(
+            "Could not restore ticket:",
+            error
+          );
 
- }
+        }
 
- }
+      }
 
- }
+    }
 
 
- if(!paidOrder){
+    if(!paidOrder){
 
- showStatus(
- "No confirmed ticket was found.",
- "error"
- );
+      showStatus(
+        "No confirmed ticket was found.",
+        "error"
+      );
 
- return;
+      return;
 
- }
+    }
 
 
- generateTicket(
- paidOrder
- );
+    generateTicket(
+      paidOrder
+    );
 
- }
- );
+  }
+);
 
 
- /* =========================================================
- GENERATE DOWNLOADABLE TICKET
- ========================================================= */
+/* =========================================================
+   GENERATE DOWNLOADABLE TICKET
+   ========================================================= */
 
- function generateTicket(order){
+function generateTicket(order){
 
- const quantity =
- Number(order.quantity || 1);
+  const quantity =
+  Number(
+    order.quantity || 1
+  );
 
- const amount =
- Number(order.amount || PRICE * quantity);
+  const amount =
+  Number(
+    order.amount ||
+    PRICE * quantity
+  );
 
 
- const ticketReference =
- order.reference ||
- "UOK-TICKET";
+  const ticketReference =
+  order.reference ||
+  "UOK-TICKET";
 
 
- const ticketNumber =
- order.orderId ||
- ticketReference;
+  const ticketNumber =
+  order.orderId ||
+  ticketReference;
 
 
- const paymentMethod =
- order.paymentMethod ||
- "M-PESA";
+  const paymentMethod =
+  order.paymentMethod ||
+  "M-PESA";
 
 
- const ticketHtml = `<!DOCTYPE html>
+  const ticketHtml = `<!DOCTYPE html>
 
- <html lang="en">
+<html lang="en">
 
- <head>
+<head>
 
- <meta charset="UTF-8">
+<meta charset="UTF-8">
 
- <meta
- name="viewport"
- content="width=device-width,initial-scale=1.0"
- >
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
 
- <title>UOK Freshers Night 2026 Ticket</title>
+<title>
+UOK Freshers Night 2026 Ticket
+</title>
 
- <style>
+<style>
 
- *{
- box-sizing:border-box;
- }
+*{
+box-sizing:border-box;
+}
 
- body{
- margin:0;
- padding:25px;
- background:#f2eee9;
- font-family:Arial,Helvetica,sans-serif;
- color:#111;
- }
+body{
+margin:0;
+padding:25px;
+background:#f2eee9;
+font-family:Arial,Helvetica,sans-serif;
+color:#111;
+}
 
- .ticket{
- width:100%;
- max-width:650px;
- margin:auto;
- background:#fff;
- border-radius:25px;
- overflow:hidden;
- box-shadow:0 20px 60px rgba(0,0,0,.12);
- }
+.ticket{
+width:100%;
+max-width:650px;
+margin:auto;
+background:#fff;
+border-radius:25px;
+overflow:hidden;
+box-shadow:0 20px 60px rgba(0,0,0,.12);
+}
 
- .top{
- padding:35px 30px;
- background:linear-gradient(
- 135deg,
- #101010,
- #242424
- );
- color:#fff;
- text-align:center;
- }
+.top{
+padding:35px 30px;
+background:linear-gradient(
+135deg,
+#101010,
+#242424
+);
+color:#fff;
+text-align:center;
+}
 
- .top img{
- width:80px;
- height:80px;
- border-radius:50%;
- object-fit:cover;
- background:#fff;
- padding:4px;
- }
+.top img{
+width:80px;
+height:80px;
+border-radius:50%;
+object-fit:cover;
+background:#fff;
+padding:4px;
+}
 
- .top h1{
- margin:18px 0 5px;
- font-size:30px;
- }
+.top h1{
+margin:18px 0 5px;
+font-size:30px;
+}
 
- .top p{
- margin:0;
- opacity:.85;
- }
+.top p{
+margin:0;
+opacity:.85;
+}
 
- .event{
- padding:28px;
- }
+.event{
+padding:28px;
+}
 
- .event-title{
- text-align:center;
- color:#e85b00;
- font-size:25px;
- font-weight:900;
- margin-bottom:8px;
- }
+.event-title{
+text-align:center;
+color:#e85b00;
+font-size:25px;
+font-weight:900;
+margin-bottom:8px;
+}
 
- .date{
- text-align:center;
- font-weight:700;
- color:#555;
- margin-bottom:25px;
- }
+.date{
+text-align:center;
+font-weight:700;
+color:#555;
+margin-bottom:25px;
+}
 
- .info{
- border:1px solid #e8e8e8;
- border-radius:17px;
- overflow:hidden;
- }
+.info{
+border:1px solid #e8e8e8;
+border-radius:17px;
+overflow:hidden;
+}
 
- .row{
- display:flex;
- justify-content:space-between;
- gap:20px;
- padding:15px 17px;
- border-bottom:1px solid #eee;
- }
+.row{
+display:flex;
+justify-content:space-between;
+gap:20px;
+padding:15px 17px;
+border-bottom:1px solid #eee;
+}
 
- .row:last-child{
- border-bottom:0;
- }
+.row:last-child{
+border-bottom:0;
+}
 
- .label{
- color:#777;
- font-size:13px;
- font-weight:700;
- }
+.label{
+color:#777;
+font-size:13px;
+font-weight:700;
+}
 
- .value{
- font-size:14px;
- font-weight:900;
- text-align:right;
- }
+.value{
+font-size:14px;
+font-weight:900;
+text-align:right;
+}
 
- .paid{
- margin-top:22px;
- padding:15px;
- background:#eaf9ed;
- color:#19743a;
- border-radius:14px;
- text-align:center;
- font-weight:900;
- }
+.paid{
+margin-top:22px;
+padding:15px;
+background:#eaf9ed;
+color:#19743a;
+border-radius:14px;
+text-align:center;
+font-weight:900;
+}
 
- .amount{
- margin-top:20px;
- padding:20px;
- border-radius:17px;
- background:#f6f6f6;
- text-align:center;
- }
+.amount{
+margin-top:20px;
+padding:20px;
+border-radius:17px;
+background:#f6f6f6;
+text-align:center;
+}
 
- .amount small{
- display:block;
- color:#777;
- margin-bottom:5px;
- }
+.amount small{
+display:block;
+color:#777;
+margin-bottom:5px;
+}
 
- .amount strong{
- color:#e85b00;
- font-size:28px;
- }
+.amount strong{
+color:#e85b00;
+font-size:28px;
+}
 
- .footer{
- padding:20px;
- background:#fafafa;
- text-align:center;
- color:#888;
- font-size:12px;
- }
+.footer{
+padding:20px;
+background:#fafafa;
+text-align:center;
+color:#888;
+font-size:12px;
+}
 
- .footer strong{
- color:#e85b00;
- }
+.footer strong{
+color:#e85b00;
+}
 
- .notice{
- margin-top:20px;
- text-align:center;
- font-size:12px;
- color:#777;
- line-height:1.5;
- }
+.notice{
+margin-top:20px;
+text-align:center;
+font-size:12px;
+color:#777;
+line-height:1.5;
+}
 
- @media print{
+@media print{
 
- body{
- background:#fff;
- padding:0;
- }
+body{
+background:#fff;
+padding:0;
+}
 
- .ticket{
- box-shadow:none;
- }
+.ticket{
+box-shadow:none;
+}
 
- }
+}
 
- </style>
+</style>
 
- </head>
+</head>
 
- <body>
+<body>
 
- <div class="ticket">
+<div class="ticket">
 
- <div class="top">
+<div class="top">
 
- <img
- src="kabaianga logo.jpeg"
- alt="ROYAL LOUNGE • MOSORIOT"
- >
+<img
+src="kabaianga logo.jpeg"
+alt="ROYAL LOUNGE • MOSORIOT"
+>
 
- <h1>
- FRESHERS NIGHT 2026
- </h1>
+<h1>
+FRESHERS NIGHT 2026
+</h1>
 
- <p>
- ROYAL LOUNGE • MOSORIOT
- </p>
+<p>
+ROYAL LOUNGE • MOSORIOT
+</p>
 
- </div>
+</div>
 
 
- <div class="event">
+<div class="event">
 
- <div class="event-title">
- FRESHERS NIGHT 2026
- </div>
+<div class="event-title">
+FRESHERS NIGHT 2026
+</div>
 
- <div class="date">
- 📅 19 September 2026
- </div>
+<div class="date">
+📅 19 September 2026
+</div>
 
 
- <div class="info">
+<div class="info">
 
- <div class="row">
- <span class="label">
- Name
- </span>
+<div class="row">
 
- <span class="value">
- ${escapeHtml(order.customerName)}
- </span>
- </div>
+<span class="label">
+Name
+</span>
 
+<span class="value">
+${escapeHtml(order.customerName)}
+</span>
 
- <div class="row">
- <span class="label">
- Tickets
- </span>
+</div>
 
- <span class="value">
- ${quantity}
- </span>
- </div>
 
+<div class="row">
 
- <div class="row">
- <span class="label">
- Payment
- </span>
+<span class="label">
+Tickets
+</span>
 
- <span class="value">
- ${escapeHtml(paymentMethod)}
- </span>
- </div>
+<span class="value">
+${quantity}
+</span>
 
+</div>
 
- <div class="row">
- <span class="label">
- Reference
- </span>
 
- <span class="value">
- ${escapeHtml(ticketReference)}
- </span>
- </div>
+<div class="row">
 
- </div>
+<span class="label">
+Payment
+</span>
 
+<span class="value">
+${escapeHtml(paymentMethod)}
+</span>
 
- <div class="amount">
+</div>
 
- <small>
- TOTAL PAID
- </small>
 
- <strong>
- KES ${amount.toLocaleString()}
- </strong>
+<div class="row">
 
- </div>
+<span class="label">
+Reference
+</span>
 
+<span class="value">
+${escapeHtml(ticketReference)}
+</span>
 
- <div class="paid">
- ✓ PAYMENT CONFIRMED
- </div>
+</div>
 
+</div>
 
- <div class="notice">
 
- Present this ticket at the event entrance.
+<div class="amount">
 
+<small>
+TOTAL PAID
+</small>
 
- Ticket reference:
- <strong>
- ${escapeHtml(ticketNumber)}
- </strong>
+<strong>
+KES ${amount.toLocaleString()}
+</strong>
 
- </div>
+</div>
 
- </div>
 
+<div class="paid">
+✓ PAYMENT CONFIRMED
+</div>
 
- <div class="footer">
 
- Powered by
- <strong>
- Joskev Developers
- </strong>
+<div class="notice">
 
- </div>
+Present this ticket at the event entrance.
 
- </div>
+<br>
 
- </body>
+Ticket reference:
 
- </html>`;
+<strong>
+${escapeHtml(ticketNumber)}
+</strong>
 
+</div>
 
- const blob =
- new Blob(
- [ticketHtml],
- {
- type:"text/html"
- }
- );
+</div>
 
 
- const url =
- URL.createObjectURL(blob);
+<div class="footer">
 
+Powered by
 
- const link =
- document.createElement("a");
+<strong>
+Joskev Developers
+</strong>
 
- link.href =
- url;
+</div>
 
- link.download =
- "UOK-Freshers-Night-Ticket-" +
- ticketNumber +
- ".html";
+</div>
 
+</body>
 
- document.body.appendChild(
- link
- );
+</html>`;
 
- link.click();
 
- link.remove();
+  const blob =
+  new Blob(
+    [ticketHtml],
+    {
+      type:"text/html"
+    }
+  );
 
 
- setTimeout(
- function(){
+  const url =
+  URL.createObjectURL(blob);
 
- URL.revokeObjectURL(url);
 
- },
- 1000
- );
+  const link =
+  document.createElement("a");
 
- }
 
+  link.href =
+  url;
 
- /* =========================================================
- RESTORE EXISTING PAID TICKET
- ========================================================= */
 
- function restorePaidTicket(){
+  link.download =
+  "UOK-Freshers-Night-Ticket-" +
+  ticketNumber +
+  ".html";
 
- /*
- * Don't overwrite a ticket being verified
- * from a Paystack callback.
- */
 
- const params =
- new URLSearchParams(
- window.location.search
- );
+  document.body.appendChild(
+    link
+  );
 
- const reference =
- params.get("reference") ||
- params.get("trxref");
 
+  link.click();
 
- if(reference){
 
- return;
+  link.remove();
 
- }
 
+  setTimeout(
+    function(){
 
- const saved =
- localStorage.getItem(
- "uok_paid_ticket"
- );
+      URL.revokeObjectURL(url);
 
+    },
+    1000
+  );
 
- if(!saved){
+}
 
- return;
 
- }
+/* =========================================================
+   RESTORE EXISTING PAID TICKET
+   ========================================================= */
 
+function restorePaidTicket(){
 
- try{
+  const params =
+  new URLSearchParams(
+    window.location.search
+  );
 
- paidOrder =
- JSON.parse(saved);
 
+  const reference =
+  params.get("reference") ||
+  params.get("trxref");
 
- if(paidOrder){
 
- showStatus(
- "Your confirmed ticket is available for download.",
- "success"
- );
+  if(reference){
 
- downloadBtn.classList.add(
- "show"
- );
+    return;
 
- }
+  }
 
- }catch(error){
 
- console.error(
- "Could not restore saved ticket:",
- error
- );
+  const saved =
+  localStorage.getItem(
+    "uok_paid_ticket"
+  );
 
- }
 
- }
+  if(!saved){
 
+    return;
 
- /* =========================================================
- STARTUP
- ========================================================= */
+  }
 
- document.addEventListener(
- "DOMContentLoaded",
- async function(){
 
- updateTotal();
+  try{
 
- /*
- * If Paystack has just returned the customer,
- * verify the transaction first.
- */
+    paidOrder =
+    JSON.parse(saved);
 
- const params =
- new URLSearchParams(
- window.location.search
- );
 
- const reference =
- params.get("reference") ||
- params.get("trxref");
+    if(paidOrder){
 
+      showStatus(
+        "Your confirmed ticket is available for download.",
+        "success"
+      );
 
- if(reference){
 
- await verifyReturnedCardPayment();
+      downloadBtn.classList.add(
+        "show"
+      );
 
- }else{
+    }
 
- restorePaidTicket();
 
- }
+  }catch(error){
 
- }
- );
+    console.error(
+      "Could not restore saved ticket:",
+      error
+    );
 
- 
+  }
+
+}
+
+
+/* =========================================================
+   STARTUP
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    updateTotal();
+
+
+    const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+    const reference =
+    params.get("reference") ||
+    params.get("trxref");
+
+
+    if(reference){
+
+      await verifyReturnedCardPayment();
+
+    }else{
+
+      restorePaidTicket();
+
+    }
+
+  }
+);
+
 </script>
+
 </body>
 </html>
