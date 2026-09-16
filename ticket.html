@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UOK Freshers Night - Ticket</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 12px 30px;
+      min-height: 100vh;
+      background: #080808;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .title p {
+      margin: 6px 0 0;
+      color: #aaaaaa;
+      font-size: 14px;
+    }
+
+    .ticket {
+      overflow: hidden;
+      background: #ffffff;
+      color: #111111;
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .ticket-header {
+      padding: 25px 20px;
+      text-align: center;
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .logo {
+      display: block;
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 12px;
+      padding: 5px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    .ticket-header h2 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .event-date {
+      margin-top: 8px;
+      color: #dddddd;
+      font-size: 14px;
+    }
+
+    .ticket-type {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 15px;
+      border-radius: 20px;
+      background: #ffffff;
+      color: #111111;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .ticket-content {
+      padding: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      color: #777777;
+      font-size: 12px;
+    }
+
+    .info-value {
+      max-width: 65%;
+      color: #111111;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .reference-box {
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 8px;
+      background: #f2f2f2;
+      text-align: center;
+    }
+
+    .reference-title {
+      margin-bottom: 7px;
+      color: #777777;
+      font-size: 11px;
+    }
+
+    .reference {
+      color: #111111;
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    .ticket-footer {
+      padding: 20px;
+      border-top: 2px dashed #cccccc;
+      text-align: center;
+    }
+
+    .ticket-footer h3 {
+      margin: 0 0 7px;
+      font-size: 17px;
+    }
+
+    .ticket-footer p {
+      margin: 0;
+      color: #666666;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .powered {
+      margin-top: 10px;
+      color: #888888;
+      font-size: 11px;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .download-button {
+      background: #ffffff;
+      color: #111111;
+    }
+
+    .print-button {
+      background: #252525;
+      color: #ffffff;
+      border: 1px solid #444444;
+    }
+
+    .home-button {
+      background: transparent;
+      color: #aaaaaa;
+      border: 1px solid #444444;
+    }
+
+    .error-box {
+      padding: 20px;
+      border-radius: 14px;
+      background: #1d0b0b;
+      border: 1px solid #612020;
+      color: #ffb4b4;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 400px) {
+      body {
+        padding: 12px 8px 25px;
+      }
+
+      .ticket-header h2 {
+        font-size: 22px;
+      }
+
+      .ticket-content {
+        padding: 16px;
+      }
+
+      .ticket-footer {
+        padding: 17px;
+      }
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .title,
+      .actions {
+        display: none;
+      }
+
+      .ticket {
+        max-width: 700px;
+        margin: 0 auto;
+        border: 1px solid #dddddd;
+        box-shadow: none;
+      }
+
+      .ticket-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <main class="page">
+
+```
+<div class="title">
+  <h1>Your Ticket</h1>
+  <p>UOK Freshers Night</p>
+</div>
+
+<div id="errorBox" class="error-box hidden">
+  <strong>Ticket not available.</strong>
+  <br><br>
+  Please complete and confirm your payment first.
+</div>
+
+<section id="ticket" class="ticket hidden">
+
+  <header class="ticket-header">
+
+    <img
+      class="logo"
+      src="kabaianga%20logo.jpeg"
+      alt="Event Logo"
+      onerror="this.style.display='none'"
+    >
+
+    <h2>UOK Freshers Night</h2>
+
+    <div class="event-date">
+      19 September 2026
+    </div>
+
+    <div id="ticketLabel" class="ticket-type">
+      Regular Ticket
+    </div>
+
+  </header>
+
+  <div class="ticket-content">
+
+    <div class="info-row">
+      <div class="info-label">
+        Customer Name
+      </div>
+
+      <div id="customerName" class="info-value">
+        -
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">
+        Ticket Type
+      </div>
+
+      <div id="ticketType" class="info-value">
+        -
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">
+        Quantity
+      </div>
+
+      <div id="quantity" class="info-value">
+        -
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">
+        Amount Paid
+      </div>
+
+      <div id="amount" class="info-value">
+        -
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">
+        Payment Status
+      </div>
+
+      <div id="paymentStatus" class="info-value">
+        PAID
+      </div>
+    </div>
+
+    <div class="reference-box">
+
+      <div class="reference-title">
+        PAYMENT / TICKET REFERENCE
+      </div>
+
+      <div id="reference" class="reference">
+        -
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer class="ticket-footer">
+
+    <h3>ADMISSION TICKET</h3>
+
+    <p>
+      Please present this ticket at the entrance.
+      Keep your payment reference available if requested.
+    </p>
+
+    <div class="powered">
+      Powered by Joskev Developers
+    </div>
+
+  </footer>
+
+</section>
+
+<div id="actions" class="actions hidden">
+
+  <button
+    type="button"
+    class="download-button"
+    onclick="downloadTicket()"
+  >
+    Download Ticket
+  </button>
+
+  <button
+    type="button"
+    class="print-button"
+    onclick="printTicket()"
+  >
+    Print Ticket
+  </button>
+
+  <button
+    type="button"
+    class="home-button"
+    onclick="goHome()"
+  >
+    Back to Booking
+  </button>
+
+</div>
+```
+
+  </main>
+
+  <script>
+    "use strict";
+
+    function getTicketData() {
+      var storedTicket;
+
+      try {
+        storedTicket = localStorage.getItem(
+          "uok_paid_ticket"
+        );
+
+        if (!storedTicket) {
+          return null;
+        }
+
+        return JSON.parse(storedTicket);
+      } catch (error) {
+        console.error(
+          "Unable to read ticket data:",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    function getValue(data, names, fallback) {
+      var i;
+      var value;
+
+      for (i = 0; i < names.length; i++) {
+        value = data[names[i]];
+
+        if (
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+        ) {
+          return value;
+        }
+      }
+
+      return fallback;
+    }
+
+    function paymentIsConfirmed(data) {
+      var status;
+
+      status = getValue(
+        data,
+        [
+          "status",
+          "paymentStatus",
+          "payment_status"
+        ],
+        ""
+      );
+
+      status = String(status).toLowerCase();
+
+      return (
+        status === "success" ||
+        status === "successful" ||
+        status === "paid" ||
+        status === "charged"
+      );
+    }
+
+    function showTicket() {
+      var data;
+      var customerName;
+      var ticketType;
+      var quantity;
+      var amount;
+      var reference;
+
+      data = getTicketData();
+
+      if (!data || !paymentIsConfirmed(data)) {
+        document
+          .getElementById("errorBox")
+          .classList.remove("hidden");
+
+        return;
+      }
+
+      customerName = getValue(
+        data,
+        [
+          "customerName",
+          "customer_name",
+          "name"
+        ],
+        "Customer"
+      );
+
+      ticketType = getValue(
+        data,
+        [
+          "ticketType",
+          "ticket_type",
+          "type"
+        ],
+        "Regular"
+      );
+
+      quantity = getValue(
+        data,
+        [
+          "quantity",
+          "qty"
+        ],
+        1
+      );
+
+      amount = getValue(
+        data,
+        [
+          "amount",
+          "amountKes",
+          "amount_kes"
+        ],
+        0
+      );
+
+      reference = getValue(
+        data,
+        [
+          "reference",
+          "ticketReference",
+          "ticket_reference",
+          "paystackReference",
+          "paystack_reference"
+        ],
+        "N/A"
+      );
+
+      document.getElementById(
+        "customerName"
+      ).textContent = String(customerName);
+
+      document.getElementById(
+        "ticketType"
+      ).textContent = String(ticketType);
+
+      document.getElementById(
+        "ticketLabel"
+      ).textContent = String(ticketType);
+
+      document.getElementById(
+        "quantity"
+      ).textContent = String(quantity);
+
+      document.getElementById(
+        "amount"
+      ).textContent =
+        "KES " +
+        Number(amount).toLocaleString("en-KE");
+
+      document.getElementById(
+        "paymentStatus"
+      ).textContent = "PAID";
+
+      document.getElementById(
+        "reference"
+      ).textContent = String(reference);
+
+      document
+        .getElementById("ticket")
+        .classList.remove("hidden");
+
+      document
+        .getElementById("actions")
+        .classList.remove("hidden");
+    }
+
+    function downloadTicket() {
+      var data;
+
+      data = getTicketData();
+
+      if (!data || !paymentIsConfirmed(data)) {
+        alert(
+          "Your payment has not been confirmed yet."
+        );
+
+        return;
+      }
+
+      /*
+       * Save the ticket page as an HTML file.
+       * The customer can open the file and print it.
+       */
+
+      var pageContent;
+      var blob;
+      var url;
+      var link;
+
+      pageContent =
+        document.documentElement.outerHTML;
+
+      blob = new Blob(
+        [pageContent],
+        {
+          type: "text/html;charset=utf-8"
+        }
+      );
+
+      url = URL.createObjectURL(blob);
+
+      link = document.createElement("a");
+
+      link.href = url;
+      link.download =
+        "UOK-Freshers-Night-Ticket.html";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      setTimeout(
+        function() {
+          URL.revokeObjectURL(url);
+        },
+        1000
+      );
+    }
+
+    function printTicket() {
+      window.print();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    showTicket();
+  </script>
+
+</body>
+</html>
