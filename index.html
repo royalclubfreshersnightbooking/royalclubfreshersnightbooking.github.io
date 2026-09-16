@@ -1713,1872 +1713,2000 @@ const PAYMENT_ENDPOINT =
 const PAYSTACK_PUBLIC_KEY = "";
 
 const CARD_PAYMENT_ENDPOINT =
-"https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-card-ticket"; 
- 
- 
-/* ========================================================= 
-   ELEMENTS 
-   ========================================================= */ 
- 
-const nameInput = 
-document.getElementById("name"); 
- 
-const phoneInput = 
-document.getElementById("phone"); 
- 
-const quantityInput = 
-document.getElementById("quantity"); 
- 
-const minusBtn = 
-document.getElementById("minusBtn"); 
- 
-const plusBtn = 
-document.getElementById("plusBtn"); 
- 
-const totalEl = 
-document.getElementById("total"); 
- 
-const payBtn = 
-document.getElementById("payBtn"); 
- 
-const cardPayBtn = 
-document.getElementById("cardPayBtn"); 
- 
-const statusEl = 
-document.getElementById("status"); 
- 
-const downloadBtn = 
-document.getElementById("downloadBtn"); 
- 
- 
-let paidOrder = null; 
- 
-let paymentCheckTimer = null; 
- 
-let paymentCheckAttempts = 0; 
- 
-const MAX_PAYMENT_CHECK_ATTEMPTS = 60; 
- 
- 
-/* ========================================================= 
-   DOWNLOAD BUTTON LOCK / UNLOCK 
-   ========================================================= */ 
- 
-function lockDownloadButton(){ 
- 
-  downloadBtn.disabled = true; 
- 
-  downloadBtn.classList.remove("ready"); 
- 
-  downloadBtn.textContent = 
-    "🎟️ PAYMENT NOT APPROVED — TICKET LOCKED"; 
- 
-} 
- 
- 
-function unlockDownloadButton(){ 
- 
-  downloadBtn.disabled = false; 
- 
-  downloadBtn.classList.add("ready"); 
- 
-  downloadBtn.textContent = 
-    "🎟️ DOWNLOAD SECURE TICKET"; 
- 
-} 
- 
- 
-/* Always start locked */ 
- 
-lockDownloadButton(); 
- 
- 
-/* ========================================================= 
-   UPDATE TOTAL 
-   ========================================================= */ 
- 
-function updateTotal(){ 
- 
-  const quantity = 
-    Number(quantityInput.textContent); 
- 
-  const amount = 
-    PRICE * quantity; 
- 
-  totalEl.textContent = 
-    "KES " + 
-    amount.toLocaleString(); 
- 
-} 
- 
- 
-/* ========================================================= 
-   QUANTITY DOWN 
-   ========================================================= */ 
- 
-minusBtn.addEventListener( 
-  "click", 
-  function(){ 
- 
-    const current = 
-      Number(quantityInput.textContent); 
- 
-    quantityInput.textContent = 
-      String( 
-        Math.max( 
-          1, 
-          current - 1 
-        ) 
-      ); 
- 
-    updateTotal(); 
- 
-  } 
-); 
- 
- 
-/* ========================================================= 
-   QUANTITY UP 
-   ========================================================= */ 
- 
-plusBtn.addEventListener( 
-  "click", 
-  function(){ 
- 
-    const current = 
-      Number(quantityInput.textContent); 
- 
-    quantityInput.textContent = 
-      String( 
-        Math.min( 
-          10, 
-          current + 1 
-        ) 
-      ); 
- 
-    updateTotal(); 
- 
-  } 
-); 
- 
- 
-/* ========================================================= 
-   NORMALIZE PHONE 
-   ========================================================= */ 
- 
-function normalizePhone(value){ 
- 
-  let phone = 
-    String(value || "") 
-      .trim() 
-      .replace(/\s+/g,""); 
- 
- 
-  if(phone.startsWith("+254")){ 
- 
-    return phone; 
- 
-  } 
- 
- 
-  if(phone.startsWith("254")){ 
- 
-    return "+" + phone; 
- 
-  } 
- 
- 
-  if( 
-    phone.startsWith("07") || 
-    phone.startsWith("01") 
-  ){ 
- 
-    return "+254" + 
-      phone.substring(1); 
- 
-  } 
- 
- 
-  if( 
-    phone.startsWith("7") || 
-    phone.startsWith("1") 
-  ){ 
- 
-    return "+254" + 
-      phone; 
- 
-  } 
- 
- 
-  return phone; 
- 
-} 
- 
- 
-/* ========================================================= 
-   SHOW STATUS 
-   ========================================================= */ 
- 
-function showStatus(message,type){ 
- 
-  statusEl.textContent = 
-    message; 
- 
-  statusEl.className = 
-    "status show " + 
-    type; 
- 
-} 
- 
- 
-/* ========================================================= 
-   SAFE HTML ESCAPE 
-   ========================================================= */ 
- 
-function escapeHtml(value){ 
- 
-  return String(value ?? "") 
-    .replace(/&/g,"&amp;") 
-    .replace(/</g,"&lt;") 
-    .replace(/>/g,"&gt;") 
-    .replace(/"/g,"&quot;") 
-    .replace(/'/g,"&#039;"); 
- 
-} 
- 
- 
-/* ========================================================= 
-   STOP AUTOMATIC PAYMENT CHECKING 
-   ========================================================= */ 
- 
-function stopPaymentChecking(){ 
- 
-  if(paymentCheckTimer){ 
- 
-    clearTimeout( 
-      paymentCheckTimer 
-    ); 
- 
-    paymentCheckTimer = 
-      null; 
- 
-  } 
- 
-} 
- 
- 
-/* ========================================================= 
-   AUTOMATIC M-PESA PAYMENT VERIFICATION 
-   ========================================================= */ 
- 
-async function verifyMpesaPayment( 
-  reference, 
-  order 
-){ 
- 
-  if(!reference){ 
- 
-    showStatus( 
-      "Waiting for payment confirmation...", 
-      "info" 
-    ); 
- 
-    return; 
- 
-  } 
- 
- 
-  if( 
-    paymentCheckAttempts >= 
-    MAX_PAYMENT_CHECK_ATTEMPTS 
-  ){ 
- 
-    stopPaymentChecking(); 
- 
-    showStatus( 
-      "Payment is taking longer than expected. If you have already paid, please wait a moment and try again.", 
-      "info" 
-    ); 
- 
-    return; 
- 
-  } 
- 
- 
-  paymentCheckAttempts++; 
- 
- 
-  try{ 
- 
-    const response = 
-      await fetch( 
-        PAYMENT_ENDPOINT, 
-        { 
-          method:"POST", 
- 
-          headers:{ 
-            "Content-Type": 
-              "application/json" 
-          }, 
- 
-          body:JSON.stringify({ 
- 
-            action: 
-              "verify", 
- 
-            reference: 
-              reference 
- 
-          }) 
- 
-        } 
-      ); 
- 
- 
-    const data = 
-      await response.json(); 
- 
- 
-    console.log( 
-      "M-PESA verification:", 
-      data 
-    ); 
- 
- 
-    if( 
-      data.success === true && 
-      ( 
-        data.paid === true || 
-        data.paymentConfirmed === true || 
-        String( 
-          data.status || "" 
-        ).toLowerCase() === "success" 
-      ) 
-    ){ 
- 
-      stopPaymentChecking(); 
- 
- 
-      paidOrder = { 
- 
-        orderId: 
-          data.orderId || 
-          order.orderId || 
-          "", 
- 
-        reference: 
-          data.reference || 
-          reference, 
- 
-        customerName: 
-          data.order?.customerName || 
-          order.customerName || 
-          "", 
- 
-        registrationNumber: 
-          data.order?.registrationNumber || 
-          order.registrationNumber || 
-          "", 
- 
-        phone: 
-          data.order?.customerPhone || 
-          order.phone || 
-          "", 
- 
-        quantity: 
-          Number( 
-            data.order?.quantity || 
-            order.quantity || 
-            1 
-          ), 
- 
-        amount: 
-          Number( 
-            data.order?.amount || 
-            order.amount || 
-            0 
-          ), 
- 
-        ticketType: 
-          data.order?.ticketType || 
-          order.ticketType || 
-          "UOK Freshers Night", 
- 
-        eventDate: 
-          "19 September 2026", 
- 
-        paymentMethod: 
-          "M-PESA", 
- 
-        paymentStatus: 
-          "PAID", 
- 
-        createdAt: 
-          new Date().toISOString() 
- 
-      }; 
- 
- 
-      localStorage.setItem( 
-        "uok_paid_ticket", 
-        JSON.stringify(paidOrder) 
-      ); 
- 
- 
-      localStorage.removeItem( 
-        "uok_pending_ticket" 
-      ); 
- 
- 
-      showStatus( 
-        "✓ PAYMENT CONFIRMED! Your ticket is ready for download.", 
-        "success" 
-      ); 
- 
- 
-      unlockDownloadButton(); 
- 
- 
-      payBtn.disabled = false; 
- 
-      cardPayBtn.disabled = false; 
- 
- 
-      payBtn.innerHTML = 
- 
-        '<span class="mpesa-icon">M</span>' + 
-        '<span class="mpesa-word">M-PESA</span>'; 
- 
- 
-      setTimeout( 
-        function(){ 
- 
-          downloadBtn.scrollIntoView({ 
-            behavior:"smooth", 
-            block:"center" 
-          }); 
- 
-        }, 
-        300 
-      ); 
- 
- 
-      return; 
- 
-    } 
- 
- 
-    if( 
-      data.status === "failed" || 
-      data.status === "abandoned" || 
-      data.status === "reversed" 
-    ){ 
- 
-      stopPaymentChecking(); 
- 
-      lockDownloadButton(); 
- 
-      showStatus( 
-        "The M-PESA payment was not completed. Please try again.", 
-        "error" 
-      ); 
- 
-      payBtn.disabled = false; 
- 
-      cardPayBtn.disabled = false; 
- 
-      payBtn.innerHTML = 
- 
-        '<span class="mpesa-icon">M</span>' + 
-        '<span class="mpesa-word">M-PESA</span>'; 
- 
-      return; 
- 
-    } 
- 
- 
-    showStatus( 
-      "M-PESA payment sent. Waiting for confirmation...", 
-      "info" 
-    ); 
- 
- 
-  }catch(error){ 
- 
-    console.error( 
-      "Automatic M-PESA verification error:", 
-      error 
-    ); 
- 
-  } 
- 
- 
-  paymentCheckTimer = 
-    setTimeout( 
-      function(){ 
- 
-        verifyMpesaPayment( 
-          reference, 
-          order 
-        ); 
- 
-      }, 
-      5000 
-    ); 
- 
-} 
- 
- 
-/* ========================================================= 
-   M-PESA PAYMENT 
-   ========================================================= */ 
- 
-payBtn.addEventListener( 
-  "click", 
-  async function(){ 
- 
-    stopPaymentChecking(); 
- 
-    paymentCheckAttempts = 0; 
- 
-    paidOrder = null; 
- 
-    lockDownloadButton(); 
- 
- 
-    const name = 
-      nameInput.value.trim(); 
- 
-    const registrationNumber = 
-      ""; 
- 
-    const phone = 
-      normalizePhone( 
-        phoneInput.value 
-      ); 
- 
-    const quantity = 
-      Number( 
-        quantityInput.textContent 
-      ); 
- 
-    const amount = 
-      PRICE * quantity; 
- 
- 
-    if(!name){ 
- 
-      showStatus( 
-        "Enter your full name.", 
-        "error" 
-      ); 
- 
-      nameInput.focus(); 
- 
-      return; 
- 
-    } 
- 
- 
-    if( 
-      !/^\+254[17]\d{8}$/.test(phone) 
-    ){ 
- 
-      showStatus( 
-        "Enter a valid Kenyan M-PESA number.", 
-        "error" 
-      ); 
- 
-      phoneInput.focus(); 
- 
-      return; 
- 
-    } 
- 
- 
-    payBtn.disabled = true; 
- 
-    cardPayBtn.disabled = true; 
- 
-    payBtn.innerHTML = 
-      '<span class="spinner"></span> PROCESSING...'; 
- 
-    showStatus( 
-      "Sending M-PESA prompt...", 
-      "info" 
-    ); 
- 
- 
-    try{ 
- 
-      const response = 
-        await fetch( 
-          PAYMENT_ENDPOINT, 
-          { 
-            method:"POST", 
- 
-            headers:{ 
-              "Content-Type": 
-                "application/json" 
-            }, 
- 
-            body:JSON.stringify({ 
- 
-              customerName: 
-                name, 
- 
-              registrationNumber: 
-                registrationNumber, 
- 
-              phone: 
-                phone, 
- 
-              ticketType: 
-                "UOK Freshers Night", 
- 
-              quantity: 
-                quantity, 
- 
-              amount: 
-                amount 
- 
-            }) 
- 
-          } 
-        ); 
- 
- 
-      const data = 
-        await response.json(); 
- 
- 
-      console.log( 
-        "M-PESA response:", 
-        data 
-      ); 
- 
- 
-      if(!response.ok){ 
- 
-        throw new Error( 
-          data.error || 
-          data.message || 
-          "Payment request failed." 
-        ); 
- 
-      } 
- 
-      const order = { 
- 
-        orderId: 
-          data.orderId || "", 
- 
-        reference: 
-          data.reference || 
-          data.paystackReference || 
-          "", 
- 
-        customerName: 
-          name, 
- 
-        registrationNumber: 
-          registrationNumber, 
- 
-        phone: 
-          phone, 
- 
-        quantity: 
-          quantity, 
- 
-        amount: 
-          amount, 
- 
-        ticketType: 
-          "UOK Freshers Night", 
- 
-        eventDate: 
-          "19 September 2026", 
- 
-        paymentMethod: 
-          "M-PESA", 
- 
-        paymentStatus: 
-          "pending", 
- 
-        createdAt: 
-          new Date().toISOString() 
- 
-      }; 
- 
- 
-      localStorage.setItem( 
-        "uok_pending_ticket", 
-        JSON.stringify(order) 
-      ); 
- 
- 
-      const paymentConfirmed = 
- 
-        data.paid === true || 
- 
-        data.paymentConfirmed === true || 
- 
-        [ 
-          "PAID", 
-          "SUCCESS", 
-          "COMPLETED" 
-        ].includes( 
-          String( 
-            data.status || "" 
-          ).toUpperCase() 
-        ); 
- 
- 
-      if(paymentConfirmed){ 
- 
-        paidOrder = order; 
- 
-        order.paymentStatus = 
-          "PAID"; 
- 
- 
-        localStorage.setItem( 
-          "uok_paid_ticket", 
-          JSON.stringify(order) 
-        ); 
- 
- 
-        showStatus( 
-          "Payment confirmed. Your ticket is ready.", 
-          "success" 
-        ); 
- 
- 
-        unlockDownloadButton(); 
- 
-      } 
- 
-      else{ 
- 
-        lockDownloadButton(); 
- 
- 
-        showStatus( 
-          "M-PESA prompt sent. Check your phone and enter your PIN.", 
-          "info" 
-        ); 
- 
- 
-        const paymentReference = 
-          data.paystackReference || 
-          data.reference || 
-          ""; 
- 
- 
-        if(paymentReference){ 
- 
-          paymentCheckAttempts = 0; 
- 
-          verifyMpesaPayment( 
-            paymentReference, 
-            order 
-          ); 
- 
-        } 
- 
-      } 
- 
- 
-    }catch(error){ 
- 
-      console.error( 
-        "M-PESA payment error:", 
-        error 
-      ); 
- 
- 
-      stopPaymentChecking(); 
- 
-      lockDownloadButton(); 
- 
- 
-      showStatus( 
-        error.message || 
-        "Something went wrong. Please try again.", 
-        "error" 
-      ); 
- 
- 
-    }finally{ 
- 
-      if(!paymentCheckTimer){ 
- 
-        payBtn.disabled = false; 
- 
-        cardPayBtn.disabled = false; 
- 
-        payBtn.innerHTML = 
- 
-          '<span class="mpesa-icon">M</span>' + 
-          '<span class="mpesa-word">M-PESA</span>'; 
- 
-      } 
- 
-    } 
- 
-  } 
-); 
- 
- 
-/* ========================================================= 
-   CARD PAYMENT INITIALIZATION 
-   ========================================================= */ 
- 
-cardPayBtn.addEventListener( 
-  "click", 
-  async function(){ 
- 
-    const name = 
-      nameInput.value.trim(); 
- 
-    const email = 
-      ""; 
- 
-    const registrationNumber = 
-      ""; 
- 
-    const quantity = 
-      Number( 
-        quantityInput.textContent 
-      ); 
- 
-    const amount = 
-      PRICE * quantity; 
- 
- 
-    if(!name){ 
- 
-      showStatus( 
-        "Enter your full name.", 
-        "error" 
-      ); 
- 
-      nameInput.focus(); 
- 
-      return; 
- 
-    } 
- 
- 
-    cardPayBtn.disabled = true; 
- 
-    payBtn.disabled = true; 
- 
-    cardPayBtn.innerHTML = 
-      '<span class="spinner"></span> STARTING...'; 
- 
- 
-    showStatus( 
-      "Connecting securely to Paystack...", 
-      "info" 
-    ); 
- 
- 
-    try{ 
- 
-      const response = 
-        await fetch( 
-          CARD_PAYMENT_ENDPOINT, 
-          { 
-            method:"POST", 
- 
-            headers:{ 
-              "Content-Type": 
-                "application/json" 
-            }, 
- 
-            body:JSON.stringify({ 
- 
-              action: 
-                "initialize", 
- 
-              customerName: 
-                name, 
- 
-              email: 
-                email, 
- 
-              registrationNumber: 
-                registrationNumber, 
- 
-              ticketType: 
-                "UOK Freshers Night", 
- 
-              quantity: 
-                quantity, 
- 
-              amount: 
-                amount 
- 
-            }) 
- 
-          } 
-        ); 
- 
- 
-      const data = 
-        await response.json(); 
- 
- 
-      console.log( 
-        "Card initialization:", 
-        data 
-      ); 
- 
- 
-      if(!response.ok){ 
- 
-        throw new Error( 
-          data.error || 
-          data.message || 
-          "Could not initialize card payment." 
-        ); 
- 
-      } 
- 
- 
-      if(!data.success){ 
- 
-        throw new Error( 
-          data.message || 
-          "Could not initialize card payment." 
-        ); 
- 
-      } 
- 
- 
-      const authorizationUrl = 
-        data.authorization_url; 
- 
-      const reference = 
-        data.reference || ""; 
- 
- 
-      if(!authorizationUrl){ 
- 
-        throw new Error( 
-          "Paystack did not return a payment URL." 
-        ); 
- 
-      } 
- 
- 
-      const cardOrder = { 
- 
-        orderId: 
-          data.orderId || "", 
- 
-        reference: 
-          reference, 
- 
-        customerName: 
-          name, 
- 
-        email: 
-          email, 
- 
-        registrationNumber: 
-          registrationNumber, 
- 
-        quantity: 
-          quantity, 
- 
-        amount: 
-          amount, 
- 
-        ticketType: 
-          "UOK Freshers Night", 
- 
-        eventDate: 
-          "19 September 2026", 
- 
-        paymentMethod: 
-          "CARD", 
- 
-        paymentStatus: 
-          "pending", 
- 
-        createdAt: 
-          new Date().toISOString() 
- 
-      }; 
- 
- 
-      localStorage.setItem( 
-        "uok_pending_card_ticket", 
-        JSON.stringify(cardOrder) 
-      ); 
- 
- 
-      lockDownloadButton(); 
- 
- 
-      showStatus( 
-        "Opening secure Paystack card payment...", 
-        "info" 
-      ); 
- 
- 
-      setTimeout( 
-        function(){ 
- 
-          window.location.href = 
-            authorizationUrl; 
- 
-        }, 
-        500 
-      ); 
- 
- 
-    }catch(error){ 
- 
-      console.error( 
-        "Card payment error:", 
-        error 
-      ); 
- 
- 
-      showStatus( 
-        error.message || 
-        "Could not start card payment. Please try again.", 
-        "error" 
-      ); 
- 
- 
-      cardPayBtn.disabled = false; 
- 
-      payBtn.disabled = false; 
- 
- 
-      cardPayBtn.innerHTML = 
- 
-        '<span class="card-icon"></span>' + 
-        '<span>CREDIT / DEBIT CARD</span>' + 
-        '<span class="brands">' + 
-          '<span class="visa">VISA</span>' + 
-          '<span class="mc"></span>' + 
-          '<span class="amex">AMERICAN<br>EXPRESS</span>' + 
-        '</span>'; 
- 
-    } 
- 
-  } 
-); 
- 
- 
-/* ========================================================= 
-   VERIFY CARD PAYMENT AFTER PAYSTACK RETURNS 
-   ========================================================= */ 
- 
-async function verifyReturnedCardPayment(){ 
- 
-  const params = 
-    new URLSearchParams( 
-      window.location.search 
-    ); 
- 
- 
-  const reference = 
-    params.get("reference") || 
-    params.get("trxref"); 
- 
- 
-  if(!reference){ 
- 
-    return; 
- 
-  } 
- 
- 
-  lockDownloadButton(); 
- 
-  showStatus( 
-    "Verifying your card payment...", 
-    "info" 
-  ); 
- 
- 
-  payBtn.disabled = true; 
- 
-  cardPayBtn.disabled = true; 
- 
- 
-  try{ 
- 
-    const response = 
-      await fetch( 
-        CARD_PAYMENT_ENDPOINT, 
-        { 
-          method:"POST", 
- 
-          headers:{ 
-            "Content-Type": 
-              "application/json" 
-          }, 
- 
-          body:JSON.stringify({ 
- 
-            action: 
-              "verify", 
- 
-            reference: 
-              reference 
- 
-          }) 
- 
-        } 
-      ); 
- 
- 
-    const data = 
-      await response.json(); 
- 
- 
-    console.log( 
-      "Card verification:", 
-      data 
-    ); 
- 
- 
-    if(!response.ok){ 
- 
-      throw new Error( 
-        data.message || 
-        data.error || 
-        "Payment verification failed." 
-      ); 
- 
-    } 
- 
- 
-    if( 
-      data.success && 
-      data.paid === true && 
-      data.paymentConfirmed === true && 
-      data.order 
-    ){ 
- 
-      const order = 
-        data.order; 
- 
- 
-      paidOrder = { 
- 
-        orderId: 
-          order.id, 
- 
-        reference: 
-          order.reference, 
- 
-        customerName: 
-          order.customerName, 
- 
-        email: 
-          order.customerEmail || "", 
- 
-        registrationNumber: 
-          order.registrationNumber, 
- 
-        phone: 
-          order.customerPhone || "", 
- 
-        quantity: 
-          Number(order.quantity), 
- 
-        amount: 
-          Number(order.amount), 
- 
-        ticketType: 
-          order.ticketType || 
-          "UOK Freshers Night", 
- 
-        eventDate: 
-          "19 September 2026", 
- 
-        paymentMethod: 
-          "CARD", 
- 
-        paymentStatus: 
-          "PAID", 
- 
-        createdAt: 
-          new Date().toISOString() 
- 
-      }; 
- 
- 
-      localStorage.setItem( 
-        "uok_paid_ticket", 
-        JSON.stringify(paidOrder) 
-      ); 
- 
- 
-      localStorage.removeItem( 
-        "uok_pending_card_ticket" 
-      ); 
- 
- 
-      localStorage.removeItem( 
-        "uok_pending_ticket" 
-      ); 
- 
- 
-      window.history.replaceState( 
-        {}, 
-        document.title, 
-        window.location.pathname 
-      ); 
- 
- 
-      showStatus( 
-        "Card payment confirmed successfully! Your ticket is ready.", 
-        "success" 
-      ); 
- 
- 
-      unlockDownloadButton(); 
- 
- 
-      setTimeout( 
-        function(){ 
- 
-          downloadBtn.scrollIntoView({ 
-            behavior:"smooth", 
-            block:"center" 
-          }); 
- 
-        }, 
-        300 
-      ); 
- 
- 
-      return; 
- 
-    } 
- 
- 
-    throw new Error( 
-      data.message || 
-      "The card payment could not be confirmed." 
-    ); 
- 
- 
-  }catch(error){ 
- 
-    console.error( 
-      "Card verification error:", 
-      error 
-    ); 
- 
- 
-    lockDownloadButton(); 
- 
- 
-    showStatus( 
-      error.message || 
-      "We could not confirm your card payment. Please contact support before making another payment.", 
-      "error" 
-    ); 
- 
- 
-  }finally{ 
- 
-    payBtn.disabled = false; 
- 
-    cardPayBtn.disabled = false; 
- 
- 
-    cardPayBtn.innerHTML = 
- 
-      '<span class="card-icon"></span>' + 
-      '<span>CREDIT / DEBIT CARD</span>' + 
-      '<span class="brands">' + 
-        '<span class="visa">VISA</span>' + 
-        '<span class="mc"></span>' + 
-        '<span class="amex">AMERICAN<br>EXPRESS</span>' + 
-      '</span>'; 
- 
-  } 
- 
-} 
- 
- 
-/* ========================================================= 
-   DOWNLOAD TICKET 
-   ========================================================= */ 
- 
-downloadBtn.addEventListener( 
-  "click", 
-  function(){ 
- 
-    if(downloadBtn.disabled){ 
- 
-      showStatus( 
-        "Payment must be approved before the ticket can be downloaded.", 
-        "error" 
-      ); 
- 
-      return; 
- 
-    } 
- 
- 
-    if(!paidOrder){ 
- 
-      const saved = 
-        localStorage.getItem( 
-          "uok_paid_ticket" 
-        ); 
- 
- 
-      if(saved){ 
- 
-        try{ 
- 
-          paidOrder = 
-            JSON.parse(saved); 
- 
-        }catch(error){ 
- 
-          console.error( 
-            "Could not restore ticket:", 
-            error 
-          ); 
- 
-        } 
- 
-      } 
- 
-    } 
- 
- 
-    if(!paidOrder){ 
- 
-      lockDownloadButton(); 
- 
- 
-      showStatus( 
-        "No confirmed ticket was found.", 
-        "error" 
-      ); 
- 
-      return; 
- 
-    } 
- 
- 
-    generateTicket( 
-      paidOrder 
-    ); 
- 
-  } 
-); 
- 
- 
-/* ========================================================= 
-   GENERATE TICKET 
-   ========================================================= */ 
- 
-function generateTicket(order){ 
- 
-  const quantity = 
-    Number( 
-      order.quantity || 1 
-    ); 
- 
- 
-  const amount = 
-    Number( 
-      order.amount || 
-      PRICE * quantity 
-    ); 
- 
- 
-  const ticketReference = 
-    order.reference || 
-    "UOK-TICKET"; 
- 
- 
-  const ticketNumber = 
-    order.orderId || 
-    ticketReference; 
- 
- 
-  const paymentMethod = 
-    order.paymentMethod || 
-    "M-PESA"; 
- 
- 
-  const customerName = 
-    escapeHtml( 
-      order.customerName || 
-      "" 
-    ); 
- 
- 
-  const safePaymentMethod = 
-    escapeHtml( 
-      paymentMethod 
-    ); 
- 
- 
-  const safeReference = 
-    escapeHtml( 
-      ticketReference 
-    ); 
- 
- 
-  const safeTicketNumber = 
-    escapeHtml( 
-      ticketNumber 
-    ); 
- 
- 
-  const ticketHtml = 
- 
-'<!DOCTYPE html>' + 
-'<html lang="en">' + 
-'<head>' + 
- 
-'<meta charset="UTF-8">' + 
- 
-'<meta name="viewport" content="width=device-width,initial-scale=1.0">' + 
- 
-'<title>UOK Freshers Night 2026 Ticket</title>' + 
- 
-'<style>' + 
- 
-'*{box-sizing:border-box;}' + 
- 
-'body{' + 
-'margin:0;' + 
-'padding:25px;' + 
-'background:#f2eee9;' + 
-'font-family:Arial,Helvetica,sans-serif;' + 
-'color:#111;' + 
-'}' + 
- 
-'.ticket{' + 
-'width:100%;' + 
-'max-width:650px;' + 
-'margin:auto;' + 
-'background:#fff;' + 
-'border-radius:25px;' + 
-'overflow:hidden;' + 
-'box-shadow:0 20px 60px rgba(0,0,0,.12);' + 
-'}' + 
- 
-'.top{' + 
-'padding:35px 30px;' + 
-'background:linear-gradient(135deg,#101010,#242424);' + 
-'color:#fff;' + 
-'text-align:center;' + 
-'}' + 
- 
-'.top img{' + 
-'width:80px;' + 
-'height:80px;' + 
-'border-radius:50%;' + 
-'object-fit:cover;' + 
-'background:#fff;' + 
-'padding:4px;' + 
-'}' + 
- 
-'.top h1{' + 
-'margin:18px 0 5px;' + 
-'font-size:30px;' + 
-'}' + 
- 
-'.top p{' + 
-'margin:0;' + 
-'opacity:.85;' + 
-'}' + 
- 
-'.event{' + 
-'padding:28px;' + 
-'}' + 
- 
-'.event-title{' + 
-'text-align:center;' + 
-'color:#e85b00;' + 
-'font-size:25px;' + 
-'font-weight:900;' + 
-'margin-bottom:8px;' + 
-'}' + 
- 
-'.date{' + 
-'text-align:center;' + 
-'font-weight:700;' + 
-'color:#555;' + 
-'margin-bottom:25px;' + 
-'}' + 
- 
-'.info{' + 
-'border:1px solid #e8e8e8;' + 
-'border-radius:17px;' + 
-'overflow:hidden;' + 
-'}' + 
- 
-'.row{' + 
-'display:flex;' + 
-'justify-content:space-between;' + 
-'gap:20px;' + 
-'padding:15px 17px;' + 
-'border-bottom:1px solid #eee;' + 
-'}' + 
- 
-'.row:last-child{' + 
-'border-bottom:0;' + 
-'}' + 
- 
-'.label{' + 
-'color:#777;' + 
-'font-size:13px;' + 
-'font-weight:700;' + 
-'}' + 
- 
-'.value{' + 
-'font-size:14px;' + 
-'font-weight:900;' + 
-'text-align:right;' + 
-'}' + 
- 
-'.paid{' + 
-'margin-top:22px;' + 
-'padding:15px;' + 
-'background:#eaf9ed;' + 
-'color:#19743a;' + 
-'border-radius:14px;' + 
-'text-align:center;' + 
-'font-weight:900;' + 
-'}' + 
- 
-'.amount{' + 
-'margin-top:20px;' + 
-'padding:20px;' + 
-'border-radius:17px;' + 
-'background:#f6f6f6;' + 
-'text-align:center;' + 
-'}' + 
- 
-'.amount small{' + 
-'display:block;' + 
-'color:#777;' + 
-'margin-bottom:5px;' + 
-'}' + 
- 
-'.amount strong{' + 
-'color:#e85b00;' + 
-'font-size:28px;' + 
-'}' + 
- 
-'.footer{' + 
-'padding:20px;' + 
-'background:#fafafa;' + 
-'text-align:center;' + 
-'color:#888;' + 
-'font-size:12px;' + 
-'}' + 
- 
-'.footer strong{' + 
-'color:#e85b00;' + 
-'}' + 
- 
-'.notice{' + 
-'margin-top:20px;' + 
-'text-align:center;' + 
-'font-size:12px;' + 
-'color:#777;' + 
-'line-height:1.5;' + 
-'}' + 
- 
-'@media print{' + 
-'body{background:#fff;padding:0;}' + 
-'.ticket{box-shadow:none;}' + 
-'}' + 
- 
-'</style>' + 
- 
-'</head>' + 
- 
-'<body>' + 
- 
-'<div class="ticket">' + 
- 
-'<div class="top">' + 
- 
-'<img src="kabaianga%20logo.jpeg" alt="ROYAL LOUNGE">' + 
- 
-'<h1>FRESHERS NIGHT 2026</h1>' + 
- 
-'<p>ROYAL LOUNGE • MOSORIOT</p>' + 
- 
-'</div>' + 
- 
-'<div class="event">' + 
- 
-'<div class="event-title">FRESHERS NIGHT 2026</div>' + 
- 
-'<div class="date">📅 19 September 2026</div>' + 
- 
-'<div class="info">' + 
- 
-'<div class="row">' + 
-'<span class="label">Name</span>' + 
-'<span class="value">' + customerName + '</span>' + 
-'</div>' + 
- 
-'<div class="row">' + 
-'<span class="label">Tickets</span>' + 
-'<span class="value">' + quantity + '</span>' + 
-'</div>' + 
- 
-'<div class="row">' + 
-'<span class="label">Payment</span>' + 
-'<span class="value">' + safePaymentMethod + '</span>' + 
-'</div>' + 
- 
-'<div class="row">' + 
-'<span class="label">Reference</span>' + 
-'<span class="value">' + safeReference + '</span>' + 
-'</div>' + 
- 
-'</div>' + 
- 
-'<div class="amount">' + 
- 
-'<small>TOTAL PAID</small>' + 
- 
-'<strong>KES ' + 
-amount.toLocaleString() + 
-'</strong>' + 
- 
-'</div>' + 
- 
-'<div class="paid">' + 
-'✓ PAYMENT CONFIRMED' + 
-'</div>' + 
- 
-'<div class="notice">' + 
- 
-'Present this ticket at the event entrance.' + 
- 
-'<br>' + 
- 
-'Ticket reference: ' + 
- 
-'<strong>' + 
-safeTicketNumber + 
-'</strong>' + 
- 
-'</div>' + 
- 
-'</div>' + 
- 
-'<div class="footer">' + 
- 
-'Powered by ' + 
-'<strong>Joskev Developers</strong>' + 
- 
-'</div>' + 
- 
-'</div>' + 
- 
-'</body>' + 
- 
-'</html>'; 
- 
- 
-  const blob = 
-    new Blob( 
-      [ticketHtml], 
-      { 
-        type:"text/html" 
-      } 
-    ); 
- 
- 
-  const url = 
-    URL.createObjectURL( 
-      blob 
-    ); 
- 
- 
-  const link = 
-    document.createElement("a"); 
- 
- 
-  link.href = 
-    url; 
- 
- 
-  link.download = 
-    "UOK-Freshers-Night-Ticket-" + 
-    ticketNumber + 
-    ".html"; 
- 
- 
-  document.body.appendChild( 
-    link 
-  ); 
- 
- 
-  link.click(); 
- 
- 
-  link.remove(); 
- 
- 
-  setTimeout( 
-    function(){ 
- 
-      URL.revokeObjectURL( 
-        url 
-      ); 
- 
-    }, 
-    1000 
-  ); 
- 
-} 
- 
- 
-/* ========================================================= 
-   RESTORE EXISTING PAID TICKET 
-   ========================================================= */ 
- 
-function restorePaidTicket(){ 
- 
-  const saved = 
-    localStorage.getItem( 
-      "uok_paid_ticket" 
-    ); 
- 
- 
-  if(!saved){ 
- 
-    lockDownloadButton(); 
- 
-    return; 
- 
-  } 
- 
- 
-  try{ 
- 
-    const savedOrder = 
-      JSON.parse(saved); 
- 
- 
-    if(!savedOrder){ 
- 
-      lockDownloadButton(); 
- 
-      return; 
- 
-    } 
- 
- 
-    /* 
-      Only restore the ticket if the saved 
-      order explicitly says it was paid. 
-    */ 
- 
-    const status = 
-      String( 
-        savedOrder.paymentStatus || 
-        savedOrder.status || 
-        "" 
-      ).toUpperCase(); 
- 
- 
-    if( 
-      status === "PAID" || 
-      status === "SUCCESS" || 
-      status === "COMPLETED" 
-    ){ 
- 
-      paidOrder = 
-        savedOrder; 
- 
-      showStatus( 
-        "Your confirmed ticket is available for download.", 
-        "success" 
-      ); 
- 
-      unlockDownloadButton(); 
- 
-    } 
- 
-    else{ 
- 
-      lockDownloadButton(); 
- 
-    } 
- 
- 
-  }catch(error){ 
- 
-    console.error( 
-      "Could not restore saved ticket:", 
-      error 
-    ); 
- 
-    lockDownloadButton(); 
- 
-  } 
- 
-} 
- 
- 
-/* ========================================================= 
-   STARTUP 
-   ========================================================= */ 
- 
-document.addEventListener( 
-  "DOMContentLoaded", 
-  async function(){ 
- 
-    updateTotal(); 
- 
- 
-    const params = 
-      new URLSearchParams( 
-        window.location.search 
-      ); 
- 
- 
-    const reference = 
-      params.get("reference") || 
-      params.get("trxref"); 
- 
- 
-    if(reference){ 
- 
-      await verifyReturnedCardPayment(); 
- 
-    } 
- 
-    else{ 
- 
-      restorePaidTicket(); 
- 
-    } 
- 
-  } 
-); 
- 
-</script> 
- 
-</body> 
+"https://gosgcgajdecgtceniveh.supabase.co/functions/v1/paystack-card-ticket";
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const nameInput =
+document.getElementById("name");
+
+const phoneInput =
+document.getElementById("phone");
+
+const quantityInput =
+document.getElementById("quantity");
+
+const minusBtn =
+document.getElementById("minusBtn");
+
+const plusBtn =
+document.getElementById("plusBtn");
+
+const totalEl =
+document.getElementById("total");
+
+const payBtn =
+document.getElementById("payBtn");
+
+const cardPayBtn =
+document.getElementById("cardPayBtn");
+
+const statusEl =
+document.getElementById("status");
+
+const downloadBtn =
+document.getElementById("downloadBtn");
+
+
+let paidOrder = null;
+
+let paymentCheckTimer = null;
+
+let paymentCheckAttempts = 0;
+
+/* FIX: keeps M-PESA waiting state active */
+let mpesaWaitingForPayment = false;
+
+const MAX_PAYMENT_CHECK_ATTEMPTS = 60;
+
+
+/* =========================================================
+   DOWNLOAD BUTTON LOCK / UNLOCK
+   ========================================================= */
+
+function lockDownloadButton(){
+
+  downloadBtn.disabled = true;
+
+  downloadBtn.classList.remove("ready");
+
+  downloadBtn.textContent =
+    "🎟️ PAYMENT NOT APPROVED — TICKET LOCKED";
+
+}
+
+
+function unlockDownloadButton(){
+
+  downloadBtn.disabled = false;
+
+  downloadBtn.classList.add("ready");
+
+  downloadBtn.textContent =
+    "🎟️ DOWNLOAD SECURE TICKET";
+
+}
+
+
+/* Always start locked */
+
+lockDownloadButton();
+
+
+/* =========================================================
+   UPDATE TOTAL
+   ========================================================= */
+
+function updateTotal(){
+
+  const quantity =
+    Number(quantityInput.textContent);
+
+  const amount =
+    PRICE * quantity;
+
+  totalEl.textContent =
+    "KES " +
+    amount.toLocaleString();
+
+}
+
+
+/* =========================================================
+   QUANTITY DOWN
+   ========================================================= */
+
+minusBtn.addEventListener(
+  "click",
+  function(){
+
+    const current =
+      Number(quantityInput.textContent);
+
+    quantityInput.textContent =
+      String(
+        Math.max(
+          1,
+          current - 1
+        )
+      );
+
+    updateTotal();
+
+  }
+);
+
+
+/* =========================================================
+   QUANTITY UP
+   ========================================================= */
+
+plusBtn.addEventListener(
+  "click",
+  function(){
+
+    const current =
+      Number(quantityInput.textContent);
+
+    quantityInput.textContent =
+      String(
+        Math.min(
+          10,
+          current + 1
+        )
+      );
+
+    updateTotal();
+
+  }
+);
+
+
+/* =========================================================
+   NORMALIZE PHONE
+   ========================================================= */
+
+function normalizePhone(value){
+
+  let phone =
+    String(value || "")
+      .trim()
+      .replace(/\s+/g,"");
+
+
+  if(phone.startsWith("+254")){
+
+    return phone;
+
+  }
+
+
+  if(phone.startsWith("254")){
+
+    return "+" + phone;
+
+  }
+
+
+  if(
+    phone.startsWith("07") ||
+    phone.startsWith("01")
+  ){
+
+    return "+254" +
+      phone.substring(1);
+
+  }
+
+
+  if(
+    phone.startsWith("7") ||
+    phone.startsWith("1")
+  ){
+
+    return "+254" +
+      phone;
+
+  }
+
+
+  return phone;
+
+}
+
+
+/* =========================================================
+   SHOW STATUS
+   ========================================================= */
+
+function showStatus(message,type){
+
+  statusEl.textContent =
+    message;
+
+  statusEl.className =
+    "status show " +
+    type;
+
+}
+
+
+/* =========================================================
+   SAFE HTML ESCAPE
+   ========================================================= */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   STOP AUTOMATIC PAYMENT CHECKING
+   ========================================================= */
+
+function stopPaymentChecking(){
+
+  if(paymentCheckTimer){
+
+    clearTimeout(
+      paymentCheckTimer
+    );
+
+    paymentCheckTimer =
+      null;
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTOMATIC M-PESA PAYMENT VERIFICATION
+   ========================================================= */
+
+async function verifyMpesaPayment(
+  reference,
+  order
+){
+
+  if(!reference){
+
+    showStatus(
+      "Waiting for payment confirmation...",
+      "info"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    paymentCheckAttempts >=
+    MAX_PAYMENT_CHECK_ATTEMPTS
+  ){
+
+    stopPaymentChecking();
+
+    mpesaWaitingForPayment = false;
+
+    payBtn.disabled = false;
+
+    cardPayBtn.disabled = false;
+
+    payBtn.innerHTML =
+      '<span class="mpesa-icon">M</span>' +
+      '<span class="mpesa-word">M-PESA</span>';
+
+    showStatus(
+      "Payment is taking longer than expected. If you have already paid, please wait a moment and try again.",
+      "info"
+    );
+
+    return;
+
+  }
+
+
+  paymentCheckAttempts++;
+
+
+  try{
+
+    const response =
+      await fetch(
+        PAYMENT_ENDPOINT,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+
+            action:
+              "verify",
+
+            reference:
+              reference
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "M-PESA verification:",
+      data
+    );
+
+
+    /* =====================================================
+       PAYMENT CONFIRMED
+       ===================================================== */
+
+    if(
+      data.success === true &&
+      (
+        data.paid === true ||
+        data.paymentConfirmed === true ||
+        String(
+          data.status || ""
+        ).toLowerCase() === "success"
+      )
+    ){
+
+      stopPaymentChecking();
+
+      mpesaWaitingForPayment = false;
+
+
+      paidOrder = {
+
+        orderId:
+          data.orderId ||
+          order.orderId ||
+          "",
+
+        reference:
+          data.reference ||
+          reference,
+
+        customerName:
+          data.order?.customerName ||
+          order.customerName ||
+          "",
+
+        registrationNumber:
+          data.order?.registrationNumber ||
+          order.registrationNumber ||
+          "",
+
+        phone:
+          data.order?.customerPhone ||
+          order.phone ||
+          "",
+
+        quantity:
+          Number(
+            data.order?.quantity ||
+            order.quantity ||
+            1
+          ),
+
+        amount:
+          Number(
+            data.order?.amount ||
+            order.amount ||
+            0
+          ),
+
+        ticketType:
+          data.order?.ticketType ||
+          order.ticketType ||
+          "UOK Freshers Night",
+
+        eventDate:
+          "19 September 2026",
+
+        paymentMethod:
+          "M-PESA",
+
+        paymentStatus:
+          "PAID",
+
+        createdAt:
+          new Date().toISOString()
+
+      };
+
+
+      localStorage.setItem(
+        "uok_paid_ticket",
+        JSON.stringify(paidOrder)
+      );
+
+
+      localStorage.removeItem(
+        "uok_pending_ticket"
+      );
+
+
+      showStatus(
+        "✓ PAYMENT CONFIRMED! Your ticket is ready for download.",
+        "success"
+      );
+
+
+      unlockDownloadButton();
+
+
+      payBtn.disabled = false;
+
+      cardPayBtn.disabled = false;
+
+
+      payBtn.innerHTML =
+        '<span class="mpesa-icon">M</span>' +
+        '<span class="mpesa-word">M-PESA</span>';
+
+
+      setTimeout(
+        function(){
+
+          downloadBtn.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+          });
+
+        },
+        300
+      );
+
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       PAYMENT FAILED
+       ===================================================== */
+
+    const paymentStatus =
+      String(
+        data.status || ""
+      ).toLowerCase();
+
+
+    if(
+      paymentStatus === "failed" ||
+      paymentStatus === "abandoned" ||
+      paymentStatus === "reversed"
+    ){
+
+      stopPaymentChecking();
+
+      mpesaWaitingForPayment = false;
+
+      lockDownloadButton();
+
+
+      payBtn.disabled = false;
+
+      cardPayBtn.disabled = false;
+
+
+      payBtn.innerHTML =
+        '<span class="mpesa-icon">M</span>' +
+        '<span class="mpesa-word">M-PESA</span>';
+
+
+      showStatus(
+        "The M-PESA payment was not completed. Please try again.",
+        "error"
+      );
+
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       PAYMENT STILL WAITING
+       ===================================================== */
+
+    mpesaWaitingForPayment = true;
+
+    payBtn.disabled = true;
+
+    cardPayBtn.disabled = true;
+
+
+    payBtn.innerHTML =
+      '<span class="spinner"></span>' +
+      '<span>WAITING FOR PAYMENT...</span>';
+
+
+    showStatus(
+      "Check your phone and enter your M-PESA PIN. Waiting for payment confirmation...",
+      "info"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Automatic M-PESA verification error:",
+      error
+    );
+
+  }
+
+
+  paymentCheckTimer =
+    setTimeout(
+      function(){
+
+        verifyMpesaPayment(
+          reference,
+          order
+        );
+
+      },
+      5000
+    );
+
+}
+
+
+/* =========================================================
+   M-PESA PAYMENT
+   ========================================================= */
+
+payBtn.addEventListener(
+  "click",
+  async function(){
+
+    stopPaymentChecking();
+
+    paymentCheckAttempts = 0;
+
+    paidOrder = null;
+
+    mpesaWaitingForPayment = false;
+
+    lockDownloadButton();
+
+
+    const name =
+      nameInput.value.trim();
+
+    const registrationNumber =
+      "";
+
+    const phone =
+      normalizePhone(
+        phoneInput.value
+      );
+
+    const quantity =
+      Number(
+        quantityInput.textContent
+      );
+
+    const amount =
+      PRICE * quantity;
+
+
+    if(!name){
+
+      showStatus(
+        "Enter your full name.",
+        "error"
+      );
+
+      nameInput.focus();
+
+      return;
+
+    }
+
+
+    if(
+      !/^\+254[17]\d{8}$/.test(phone)
+    ){
+
+      showStatus(
+        "Enter a valid Kenyan M-PESA number.",
+        "error"
+      );
+
+      phoneInput.focus();
+
+      return;
+
+    }
+
+
+    /*
+     * Immediately show the waiting spinner
+     * while the M-PESA request is being created.
+     */
+
+    payBtn.disabled = true;
+
+    cardPayBtn.disabled = true;
+
+    payBtn.innerHTML =
+      '<span class="spinner"></span>' +
+      '<span>WAITING FOR PAYMENT...</span>';
+
+    showStatus(
+      "Check your phone and enter your M-PESA PIN.",
+      "info"
+    );
+
+
+    try{
+
+      const response =
+        await fetch(
+          PAYMENT_ENDPOINT,
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+              customerName:
+                name,
+
+              registrationNumber:
+                registrationNumber,
+
+              phone:
+                phone,
+
+              ticketType:
+                "UOK Freshers Night",
+
+              quantity:
+                quantity,
+
+              amount:
+                amount
+
+            })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      console.log(
+        "M-PESA response:",
+        data
+      );
+
+
+      if(!response.ok){
+
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Payment request failed."
+        );
+
+      }
+
+
+      const order = {
+
+        orderId:
+          data.orderId || "",
+
+        reference:
+          data.reference ||
+          data.paystackReference ||
+          "",
+
+        customerName:
+          name,
+
+        registrationNumber:
+          registrationNumber,
+
+        phone:
+          phone,
+
+        quantity:
+          quantity,
+
+        amount:
+          amount,
+
+        ticketType:
+          "UOK Freshers Night",
+
+        eventDate:
+          "19 September 2026",
+
+        paymentMethod:
+          "M-PESA",
+
+        paymentStatus:
+          "pending",
+
+        createdAt:
+          new Date().toISOString()
+
+      };
+
+
+      localStorage.setItem(
+        "uok_pending_ticket",
+        JSON.stringify(order)
+      );
+
+
+      const paymentConfirmed =
+
+        data.paid === true ||
+
+        data.paymentConfirmed === true ||
+
+        [
+          "PAID",
+          "SUCCESS",
+          "COMPLETED"
+        ].includes(
+          String(
+            data.status || ""
+          ).toUpperCase()
+        );
+
+
+      if(paymentConfirmed){
+
+        mpesaWaitingForPayment = false;
+
+        paidOrder = order;
+
+        order.paymentStatus =
+          "PAID";
+
+
+        localStorage.setItem(
+          "uok_paid_ticket",
+          JSON.stringify(order)
+        );
+
+
+        localStorage.removeItem(
+          "uok_pending_ticket"
+        );
+
+
+        showStatus(
+          "Payment confirmed. Your ticket is ready.",
+          "success"
+        );
+
+
+        unlockDownloadButton();
+
+
+        payBtn.disabled = false;
+
+        cardPayBtn.disabled = false;
+
+
+        payBtn.innerHTML =
+          '<span class="mpesa-icon">M</span>' +
+          '<span class="mpesa-word">M-PESA</span>';
+
+      }
+
+
+      else{
+
+        lockDownloadButton();
+
+
+        const paymentReference =
+          data.paystackReference ||
+          data.reference ||
+          "";
+
+
+        if(paymentReference){
+
+          mpesaWaitingForPayment = true;
+
+          payBtn.disabled = true;
+
+          cardPayBtn.disabled = true;
+
+
+          payBtn.innerHTML =
+            '<span class="spinner"></span>' +
+            '<span>WAITING FOR PAYMENT...</span>';
+
+
+          showStatus(
+            "Check your phone and enter your M-PESA PIN. Waiting for payment confirmation...",
+            "info"
+          );
+
+
+          paymentCheckAttempts = 0;
+
+
+          verifyMpesaPayment(
+            paymentReference,
+            order
+          );
+
+        }
+
+        else{
+
+          /*
+           * No reference means automatic verification
+           * cannot continue, so restore the buttons.
+           */
+
+          mpesaWaitingForPayment = false;
+
+          payBtn.disabled = false;
+
+          cardPayBtn.disabled = false;
+
+
+          payBtn.innerHTML =
+            '<span class="mpesa-icon">M</span>' +
+            '<span class="mpesa-word">M-PESA</span>';
+
+
+          showStatus(
+            "M-PESA prompt sent. Check your phone and enter your PIN.",
+            "info"
+          );
+
+        }
+
+      }
+
+
+    }catch(error){
+
+      console.error(
+        "M-PESA payment error:",
+        error
+      );
+
+
+      stopPaymentChecking();
+
+      mpesaWaitingForPayment = false;
+
+      lockDownloadButton();
+
+
+      showStatus(
+        error.message ||
+        "Something went wrong. Please try again.",
+        "error"
+      );
+
+
+    }finally{
+
+      /*
+       * IMPORTANT:
+       * Do not reset the M-PESA button while
+       * automatic payment verification is active.
+       */
+
+      if(
+        !paymentCheckTimer &&
+        !mpesaWaitingForPayment
+      ){
+
+        payBtn.disabled = false;
+
+        cardPayBtn.disabled = false;
+
+        payBtn.innerHTML =
+
+          '<span class="mpesa-icon">M</span>' +
+          '<span class="mpesa-word">M-PESA</span>';
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CARD PAYMENT INITIALIZATION
+   ========================================================= */
+
+cardPayBtn.addEventListener(
+  "click",
+  async function(){
+
+    const name =
+      nameInput.value.trim();
+
+    const email =
+      "";
+
+    const registrationNumber =
+      "";
+
+    const quantity =
+      Number(
+        quantityInput.textContent
+      );
+
+    const amount =
+      PRICE * quantity;
+
+
+    if(!name){
+
+      showStatus(
+        "Enter your full name.",
+        "error"
+      );
+
+      nameInput.focus();
+
+      return;
+
+    }
+
+
+    cardPayBtn.disabled = true;
+
+    payBtn.disabled = true;
+
+    cardPayBtn.innerHTML =
+      '<span class="spinner"></span> STARTING...';
+
+
+    showStatus(
+      "Connecting securely to Paystack...",
+      "info"
+    );
+
+
+    try{
+
+      const response =
+        await fetch(
+          CARD_PAYMENT_ENDPOINT,
+          {
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:JSON.stringify({
+
+              action:
+                "initialize",
+
+              customerName:
+                name,
+
+              email:
+                email,
+
+              registrationNumber:
+                registrationNumber,
+
+              ticketType:
+                "UOK Freshers Night",
+
+              quantity:
+                quantity,
+
+              amount:
+                amount
+
+            })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      console.log(
+        "Card initialization:",
+        data
+      );
+
+
+      if(!response.ok){
+
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Could not initialize card payment."
+        );
+
+      }
+
+
+      if(!data.success){
+
+        throw new Error(
+          data.message ||
+          "Could not initialize card payment."
+        );
+
+      }
+
+
+      const authorizationUrl =
+        data.authorization_url;
+
+      const reference =
+        data.reference || "";
+
+
+      if(!authorizationUrl){
+
+        throw new Error(
+          "Paystack did not return a payment URL."
+        );
+
+      }
+
+
+      const cardOrder = {
+
+        orderId:
+          data.orderId || "",
+
+        reference:
+          reference,
+
+        customerName:
+          name,
+
+        email:
+          email,
+
+        registrationNumber:
+          registrationNumber,
+
+        quantity:
+          quantity,
+
+        amount:
+          amount,
+
+        ticketType:
+          "UOK Freshers Night",
+
+        eventDate:
+          "19 September 2026",
+
+        paymentMethod:
+          "CARD",
+
+        paymentStatus:
+          "pending",
+
+        createdAt:
+          new Date().toISOString()
+
+      };
+
+
+      localStorage.setItem(
+        "uok_pending_card_ticket",
+        JSON.stringify(cardOrder)
+      );
+
+
+      lockDownloadButton();
+
+
+      showStatus(
+        "Opening secure Paystack card payment...",
+        "info"
+      );
+
+
+      setTimeout(
+        function(){
+
+          window.location.href =
+            authorizationUrl;
+
+        },
+        500
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "Card payment error:",
+        error
+      );
+
+
+      showStatus(
+        error.message ||
+        "Could not start card payment. Please try again.",
+        "error"
+      );
+
+
+      cardPayBtn.disabled = false;
+
+      payBtn.disabled = false;
+
+
+      cardPayBtn.innerHTML =
+
+        '<span class="card-icon"></span>' +
+        '<span>CREDIT / DEBIT CARD</span>' +
+        '<span class="brands">' +
+          '<span class="visa">VISA</span>' +
+          '<span class="mc"></span>' +
+          '<span class="amex">AMERICAN<br>EXPRESS</span>' +
+        '</span>';
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   VERIFY CARD PAYMENT AFTER PAYSTACK RETURNS
+   ========================================================= */
+
+async function verifyReturnedCardPayment(){
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const reference =
+    params.get("reference") ||
+    params.get("trxref");
+
+
+  if(!reference){
+
+    return;
+
+  }
+
+
+  lockDownloadButton();
+
+  showStatus(
+    "Verifying your card payment...",
+    "info"
+  );
+
+
+  payBtn.disabled = true;
+
+  cardPayBtn.disabled = true;
+
+
+  try{
+
+    const response =
+      await fetch(
+        CARD_PAYMENT_ENDPOINT,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+
+            action:
+              "verify",
+
+            reference:
+              reference
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "Card verification:",
+      data
+    );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data.message ||
+        data.error ||
+        "Payment verification failed."
+      );
+
+    }
+
+
+    if(
+      data.success &&
+      data.paid === true &&
+      data.paymentConfirmed === true &&
+      data.order
+    ){
+
+      const order =
+        data.order;
+
+
+      paidOrder = {
+
+        orderId:
+          order.id,
+
+        reference:
+          order.reference,
+
+        customerName:
+          order.customerName,
+
+        email:
+          order.customerEmail || "",
+
+        registrationNumber:
+          order.registrationNumber,
+
+        phone:
+          order.customerPhone || "",
+
+        quantity:
+          Number(order.quantity),
+
+        amount:
+          Number(order.amount),
+
+        ticketType:
+          order.ticketType ||
+          "UOK Freshers Night",
+
+        eventDate:
+          "19 September 2026",
+
+        paymentMethod:
+          "CARD",
+
+        paymentStatus:
+          "PAID",
+
+        createdAt:
+          new Date().toISOString()
+
+      };
+
+
+      localStorage.setItem(
+        "uok_paid_ticket",
+        JSON.stringify(paidOrder)
+      );
+
+
+      localStorage.removeItem(
+        "uok_pending_card_ticket"
+      );
+
+
+      localStorage.removeItem(
+        "uok_pending_ticket"
+      );
+
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+
+
+      showStatus(
+        "Card payment confirmed successfully! Your ticket is ready.",
+        "success"
+      );
+
+
+      unlockDownloadButton();
+
+
+      setTimeout(
+        function(){
+
+          downloadBtn.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+          });
+
+        },
+        300
+      );
+
+
+      return;
+
+    }
+
+
+    throw new Error(
+      data.message ||
+      "The card payment could not be confirmed."
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Card verification error:",
+      error
+    );
+
+
+    lockDownloadButton();
+
+
+    showStatus(
+      error.message ||
+      "We could not confirm your card payment. Please contact support before making another payment.",
+      "error"
+    );
+
+
+  }finally{
+
+    payBtn.disabled = false;
+
+    cardPayBtn.disabled = false;
+
+
+    cardPayBtn.innerHTML =
+
+      '<span class="card-icon"></span>' +
+      '<span>CREDIT / DEBIT CARD</span>' +
+      '<span class="brands">' +
+        '<span class="visa">VISA</span>' +
+        '<span class="mc"></span>' +
+        '<span class="amex">AMERICAN<br>EXPRESS</span>' +
+      '</span>';
+
+  }
+
+}
+
+
+/* =========================================================
+   DOWNLOAD TICKET
+   ========================================================= */
+
+downloadBtn.addEventListener(
+  "click",
+  function(){
+
+    if(downloadBtn.disabled){
+
+      showStatus(
+        "Payment must be approved before the ticket can be downloaded.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!paidOrder){
+
+      const saved =
+        localStorage.getItem(
+          "uok_paid_ticket"
+        );
+
+
+      if(saved){
+
+        try{
+
+          paidOrder =
+            JSON.parse(saved);
+
+        }catch(error){
+
+          console.error(
+            "Could not restore ticket:",
+            error
+          );
+
+        }
+
+      }
+
+    }
+
+
+    if(!paidOrder){
+
+      lockDownloadButton();
+
+
+      showStatus(
+        "No confirmed ticket was found.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    generateTicket(
+      paidOrder
+    );
+
+  }
+);
+
+
+/* =========================================================
+   GENERATE TICKET
+   ========================================================= */
+
+function generateTicket(order){
+
+  const quantity =
+    Number(
+      order.quantity || 1
+    );
+
+
+  const amount =
+    Number(
+      order.amount ||
+      PRICE * quantity
+    );
+
+
+  const ticketReference =
+    order.reference ||
+    "UOK-TICKET";
+
+
+  const ticketNumber =
+    order.orderId ||
+    ticketReference;
+
+
+  const paymentMethod =
+    order.paymentMethod ||
+    "M-PESA";
+
+
+  const customerName =
+    escapeHtml(
+      order.customerName ||
+      ""
+    );
+
+
+  const safePaymentMethod =
+    escapeHtml(
+      paymentMethod
+    );
+
+
+  const safeReference =
+    escapeHtml(
+      ticketReference
+    );
+
+
+  const safeTicketNumber =
+    escapeHtml(
+      ticketNumber
+    );
+
+
+  const ticketHtml =
+
+'<!DOCTYPE html>' +
+'<html lang="en">' +
+'<head>' +
+
+'<meta charset="UTF-8">' +
+
+'<meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+
+'<title>UOK Freshers Night 2026 Ticket</title>' +
+
+'<style>' +
+
+'*{box-sizing:border-box;}' +
+
+'body{' +
+'margin:0;' +
+'padding:25px;' +
+'background:#f2eee9;' +
+'font-family:Arial,Helvetica,sans-serif;' +
+'color:#111;' +
+'}' +
+
+'.ticket{' +
+'width:100%;' +
+'max-width:650px;' +
+'margin:auto;' +
+'background:#fff;' +
+'border-radius:25px;' +
+'overflow:hidden;' +
+'box-shadow:0 20px 60px rgba(0,0,0,.12);' +
+'}' +
+
+'.top{' +
+'padding:35px 30px;' +
+'background:linear-gradient(135deg,#101010,#242424);' +
+'color:#fff;' +
+'text-align:center;' +
+'}' +
+
+'.top img{' +
+'width:80px;' +
+'height:80px;' +
+'border-radius:50%;' +
+'object-fit:cover;' +
+'background:#fff;' +
+'padding:4px;' +
+'}' +
+
+'.top h1{' +
+'margin:18px 0 5px;' +
+'font-size:30px;' +
+'}' +
+
+'.top p{' +
+'margin:0;' +
+'opacity:.85;' +
+'}' +
+
+'.event{' +
+'padding:28px;' +
+'}' +
+
+'.event-title{' +
+'text-align:center;' +
+'color:#e85b00;' +
+'font-size:25px;' +
+'font-weight:900;' +
+'margin-bottom:8px;' +
+'}' +
+
+'.date{' +
+'text-align:center;' +
+'font-weight:700;' +
+'color:#555;' +
+'margin-bottom:25px;' +
+'}' +
+
+'.info{' +
+'border:1px solid #e8e8e8;' +
+'border-radius:17px;' +
+'overflow:hidden;' +
+'}' +
+
+'.row{' +
+'display:flex;' +
+'justify-content:space-between;' +
+'gap:20px;' +
+'padding:15px 17px;' +
+'border-bottom:1px solid #eee;' +
+'}' +
+
+'.row:last-child{' +
+'border-bottom:0;' +
+'}' +
+
+'.label{' +
+'color:#777;' +
+'font-size:13px;' +
+'font-weight:700;' +
+'}' +
+
+'.value{' +
+'font-size:14px;' +
+'font-weight:900;' +
+'text-align:right;' +
+'}' +
+
+'.paid{' +
+'margin-top:22px;' +
+'padding:15px;' +
+'background:#eaf9ed;' +
+'color:#19743a;' +
+'border-radius:14px;' +
+'text-align:center;' +
+'font-weight:900;' +
+'}' +
+
+'.amount{' +
+'margin-top:20px;' +
+'padding:20px;' +
+'border-radius:17px;' +
+'background:#f6f6f6;' +
+'text-align:center;' +
+'}' +
+
+'.amount small{' +
+'display:block;' +
+'color:#777;' +
+'margin-bottom:5px;' +
+'}' +
+
+'.amount strong{' +
+'color:#e85b00;' +
+'font-size:28px;' +
+'}' +
+
+'.footer{' +
+'padding:20px;' +
+'background:#fafafa;' +
+'text-align:center;' +
+'color:#888;' +
+'font-size:12px;' +
+'}' +
+
+'.footer strong{' +
+'color:#e85b00;' +
+'}' +
+
+'.notice{' +
+'margin-top:20px;' +
+'text-align:center;' +
+'font-size:12px;' +
+'color:#777;' +
+'line-height:1.5;' +
+'}' +
+
+'@media print{' +
+'body{background:#fff;padding:0;}' +
+'.ticket{box-shadow:none;}' +
+'}' +
+
+'</style>' +
+
+'</head>' +
+
+'<body>' +
+
+'<div class="ticket">' +
+
+'<div class="top">' +
+
+'<img src="kabaianga%20logo.jpeg" alt="ROYAL LOUNGE">' +
+
+'<h1>FRESHERS NIGHT 2026</h1>' +
+
+'<p>ROYAL LOUNGE • MOSORIOT</p>' +
+
+'</div>' +
+
+'<div class="event">' +
+
+'<div class="event-title">FRESHERS NIGHT 2026</div>' +
+
+'<div class="date">📅 19 September 2026</div>' +
+
+'<div class="info">' +
+
+'<div class="row">' +
+'<span class="label">Name</span>' +
+'<span class="value">' + customerName + '</span>' +
+'</div>' +
+
+'<div class="row">' +
+'<span class="label">Tickets</span>' +
+'<span class="value">' + quantity + '</span>' +
+'</div>' +
+
+'<div class="row">' +
+'<span class="label">Payment</span>' +
+'<span class="value">' + safePaymentMethod + '</span>' +
+'</div>' +
+
+'<div class="row">' +
+'<span class="label">Reference</span>' +
+'<span class="value">' + safeReference + '</span>' +
+'</div>' +
+
+'</div>' +
+
+'<div class="amount">' +
+
+'<small>TOTAL PAID</small>' +
+
+'<strong>KES ' +
+amount.toLocaleString() +
+'</strong>' +
+
+'</div>' +
+
+'<div class="paid">' +
+'✓ PAYMENT CONFIRMED' +
+'</div>' +
+
+'<div class="notice">' +
+
+'Present this ticket at the event entrance.' +
+
+'<br>' +
+
+'Ticket reference: ' +
+
+'<strong>' +
+
+safeTicketNumber +
+
+'</strong>' +
+
+'</div>' +
+
+'</div>' +
+
+'<div class="footer">' +
+
+'Powered by ' +
+'<strong>Joskev Developers</strong>' +
+
+'</div>' +
+
+'</div>' +
+
+'</body>' +
+
+'</html>';
+
+
+  const blob =
+    new Blob(
+      [ticketHtml],
+      {
+        type:"text/html"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement("a");
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    "UOK-Freshers-Night-Ticket-" +
+    ticketNumber +
+    ".html";
+
+
+  document.body.appendChild(
+    link
+  );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  setTimeout(
+    function(){
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1000
+  );
+
+}
+
+
+/* =========================================================
+   RESTORE EXISTING PAID TICKET
+   ========================================================= */
+
+function restorePaidTicket(){
+
+  const saved =
+    localStorage.getItem(
+      "uok_paid_ticket"
+    );
+
+
+  if(!saved){
+
+    lockDownloadButton();
+
+    return;
+
+  }
+
+
+  try{
+
+    const savedOrder =
+      JSON.parse(saved);
+
+
+    if(!savedOrder){
+
+      lockDownloadButton();
+
+      return;
+
+    }
+
+
+    /*
+      Only restore the ticket if the saved
+      order explicitly says it was paid.
+    */
+
+    const status =
+      String(
+        savedOrder.paymentStatus ||
+        savedOrder.status ||
+        ""
+      ).toUpperCase();
+
+
+    if(
+      status === "PAID" ||
+      status === "SUCCESS" ||
+      status === "COMPLETED"
+    ){
+
+      paidOrder =
+        savedOrder;
+
+      showStatus(
+        "Your confirmed ticket is available for download.",
+        "success"
+      );
+
+      unlockDownloadButton();
+
+    }
+
+    else{
+
+      lockDownloadButton();
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Could not restore saved ticket:",
+      error
+    );
+
+    lockDownloadButton();
+
+  }
+
+}
+
+
+/* =========================================================
+   STARTUP
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    updateTotal();
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const reference =
+      params.get("reference") ||
+      params.get("trxref");
+
+
+    if(reference){
+
+      await verifyReturnedCardPayment();
+
+    }
+
+    else{
+
+      restorePaidTicket();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
 </html>
